@@ -1,0 +1,135 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seamless.js | Beautiful, seamless iframes.</title>
+    <link rel="stylesheet" href="css/foundation.css" />
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="build/seamless.parent.js"></script>
+    <script type="text/javascript">
+      $(function() {
+
+        // Define the child pages.
+        var child1 = $('#childpage1').seamless();
+        var child2 = $('#childpage2').seamless();
+
+        /**
+         * Send text to the child1 iframe.
+         */
+        $('#sendtext').click(function(event) {
+          event.preventDefault();
+          child1.send({
+            type: 'setContent',
+            header: $('#sendtextcontent').val()
+          });
+        });
+
+        /**
+         * Add an image to the child2 iframe.
+         */
+        $('#addimage').click(function(event) {
+          event.preventDefault();
+          child2.send({
+            type: 'setContent',
+            image: 'http://cdn.memegenerator.net/instances/500x/48423261.jpg'
+          });
+        });
+
+        /**
+         * When they click the swap button.
+         */
+        $('#swap').click(function(event) {
+          event.preventDefault();
+
+          // Get the child1 content.
+          child1.send({
+            data: {type: 'getContent'},
+            success: function(data1) {
+
+              // Get the child2 content.
+              child2.send({
+                data: {type: 'getContent'},
+                success: function(data2) {
+
+                  // Swap the contents.
+                  child1.send({
+                    type: 'setContent',
+                    header: data2.header,
+                    image: data2.image
+                  });
+                  child2.send({
+                    type: 'setContent',
+                    header: data1.header,
+                    image: data1.image
+                  });
+                }
+              });
+            }
+          });
+        });
+      });
+    </script>
+    <style type="text/css">
+      iframe {
+        border: dashed 5px #ddd !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="row panel">
+      <h2 class="subheader">Beautiful, seamless iframes with seamless.js</h2>
+      <div class="large-8 columns">
+        <p>A <strong>seamless</strong> iframe makes it so that visitors are unable to distinguish between content within the iframe and content beside the iframe. <strong>Seamless.js</strong> is a jQuery library that makes working with iframes easy by doing all the <strong>seamless</strong> stuff for you automatically.</p>
+        <p>Stuff like...</p>
+        <p><ul>
+          <li>Automatically adds 'seamless' attributes to an iframe.</li>
+          <li>Easy communication between parent page and iframe page.</li>
+          <li>Auto-resizing the iframe to fit the contents of the child page.</li>
+          <li>Loading indicator when the child page is loading.</li>
+          <li>Auto failsafe to open iframe in separate window in case of error.</li>
+          <li>Allow the child page to pop out of the parent page.</li>
+        </ul></p>
+        <p><a href="https://github.com/travist/seamless.js" class="button">Download on GitHub &#x276f;&#x276f;</a></p>
+      </div>
+      <div class="large-4 columns">
+        <img src="http://cdn.memegenerator.net/instances/500x/48423261.jpg" />
+      </div>
+    </div>
+    <div class="row panel">
+      <div class="large-12 columns">
+        <h2 class="subheader">Example</h2>
+        <p>The iframes are denoted here by the thick dashed gray lines.  The dashed border would not normally show, but are only here to show you where the iframes are located. Use the following buttons and inputs to test its functionality.</p>
+        <div class="large-5 columns">
+          <div class="small-12">
+            <input id="sendtextcontent" type="text" placeholder="Enter text to send to Child Page 1.">
+          </div>
+          <div class="small-12">
+            <a href="#" id="sendtext" class="button postfix">Send to Child Page 1</a>
+          </div>
+        </div>
+        <div class="large-5 columns">
+          <a href="#" id="addimage" class="large-8 button expand">Add an image to Child Page 2</a>
+        </div>
+      </div>
+      <div class="large-5 columns">
+        <h4>Child Page 1</h4>
+        <iframe id="childpage1" src="child1.html"></iframe>
+      </div>
+      <div class="large-2 columns" style="margin-top: 40px;">
+        <h5>Swap Content</h5>
+        <a href="#" style="font-size: 20px;" id="swap" class="button large-12 columns">&harr;</a>
+      </div>
+      <div class="large-5 columns">
+        <h4>Child Page 2</h4>
+        <iframe id="childpage2" src="child2.html"></iframe>
+      </div>
+    </div>
+    <div class="row panel">
+      <div class="large-12 columns">
+        <h2 class="subheader">Documentation</h2>
+        <a href="https://github.com/travist/seamless.js" target="_blank" class="button">Go here for documentation &#x276f;&#x276f;</a>
+      </div>
+    </div>
+  </body>
+</html>

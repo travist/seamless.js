@@ -1,0 +1,56 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seamless.js | Beautiful, seamless iframes.</title>
+  <link rel="stylesheet" href="css/foundation.css" />
+  <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="build/seamless.child.js"></script>
+  <script type="text/javascript">
+    var connection = $.seamless.connect({
+      url: 'index.html',
+      container: 'div.content'
+    });
+
+    // Receive a message
+    connection.receive(function(data) {
+      switch(data.type) {
+        case 'setContent':
+          if (data.hasOwnProperty('header')) {
+            $('h1').text(data.header);
+          }
+          if (data.hasOwnProperty('image')) {
+            $('#image').attr('src', data.image);
+          }
+          break;
+        case 'getContent':
+          return {
+            header: $('h1').text(),
+            image: $('#image').attr('src')
+          };
+          break;
+      }
+    });
+  </script>
+</head>
+<body>
+<div class="content">
+  <div class="row">
+    <div class="large-12 columns" style="margin:10px;">
+      <h1></h1>
+      <em>
+        This is the Child Page 2.
+        Use the swap button to swap the header and image from Child Page 1.
+        You can also pop this page outside of the iframe by clicking <a href="child2.html?noiframe=true">here</a>.
+      </em>
+    </div>
+  </div>
+  <div class="row">
+    <div class="large-12 columns">
+      <img id="image" src="" />
+    </div>
+  </div>
+</div>
+</body>
+</html>
