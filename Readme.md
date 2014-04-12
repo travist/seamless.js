@@ -55,7 +55,6 @@ You can also pass in options to this jQuery library like so...
 $('#myiframe').seamless({
   loading: 'I am loading!!!!'
 });
-}
 ```
 
 The following parameters are accepted.
