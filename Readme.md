@@ -132,7 +132,7 @@ var parent = $.seamless.connect({
 });
 
 // Send a message
-child.send({
+parent.send({
   myparam: 'This is anything you want it to be...'
 });
 
