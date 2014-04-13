@@ -524,7 +524,7 @@ SeamlessConnection.prototype.receive = function(type, callback) {
   $.pm.bind(type, function(data, event) {
 
     // Only handle data if the connection id's match.
-    if (data.__id === _self.id) {
+    if (data.__id && (data.__id === _self.id)) {
       return callback(data, event);
     }
     else {
@@ -590,8 +590,19 @@ SeamlessConnection.prototype.setActive = function(active) {
 
   // Keep track of the next connection ID.
   var seamlessFrames = [];
-  var nextConnectionId = 1;
   var connecting = false;
+  var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+
+  /**
+   * Creates a connection ID.
+   */
+  var getConnectionId = function() {
+    var r = [];
+    for (var i=0; i < 32; i++) {
+      r[i] = chars[0 | Math.random() * 32];
+    }
+    return r.join("");
+  };
 
   // Call when each child is ready.
   $.pm.bind('seamless_ready', function() {
@@ -610,7 +621,7 @@ SeamlessConnection.prototype.setActive = function(active) {
 
         // If no connection ID is established, then set it.
         if (!iframe.connection.id) {
-          iframe.connection.id = nextConnectionId++;
+          iframe.connection.id = getConnectionId();
         }
 
         // Send the connection message to the child page.

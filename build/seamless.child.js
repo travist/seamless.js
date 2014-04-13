@@ -524,7 +524,7 @@ SeamlessConnection.prototype.receive = function(type, callback) {
   $.pm.bind(type, function(data, event) {
 
     // Only handle data if the connection id's match.
-    if (data.__id === _self.id) {
+    if (data.__id && (data.__id === _self.id)) {
       return callback(data, event);
     }
     else {
