@@ -471,17 +471,11 @@ var SeamlessBase = {
  * @constructor
  */
 var SeamlessConnection = function(target, url) {
-  this.id = null;
+  this.id = 0;
   this.target = target;
   this.url = url;
   this.active = false;
   this.queue = [];
-
-  // Set the connection id if it exists.
-  var connectionId = SeamlessBase.getParam('iframeId');
-  if (connectionId) {
-    this.id = connectionId;
-  }
 };
 
 /**
@@ -701,9 +695,6 @@ SeamlessConnection.prototype.setActive = function(active) {
 
     // The connection object.
     iframe.connection = new SeamlessConnection(window.frames[id], src);
-
-    // Set the connectionId.
-    iframe.connection.id =  SeamlessBase.getParam('iframeId', src) || src;
 
     // Assign the send and receive functions to the iframe.
     iframe.send = function(pm) {

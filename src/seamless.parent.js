@@ -142,9 +142,6 @@
     // The connection object.
     iframe.connection = new SeamlessConnection(window.frames[id], src);
 
-    // Set the connectionId.
-    iframe.connection.id =  SeamlessBase.getParam('iframeId', src) || src;
-
     // Assign the send and receive functions to the iframe.
     iframe.send = function(pm) {
       iframe.connection.send.call(iframe.connection, pm);

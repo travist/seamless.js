@@ -6,17 +6,11 @@
  * @constructor
  */
 var SeamlessConnection = function(target, url) {
-  this.id = null;
+  this.id = 0;
   this.target = target;
   this.url = url;
   this.active = false;
   this.queue = [];
-
-  // Set the connection id if it exists.
-  var connectionId = SeamlessBase.getParam('iframeId');
-  if (connectionId) {
-    this.id = connectionId;
-  }
 };
 
 /**
