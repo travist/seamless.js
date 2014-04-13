@@ -74,12 +74,10 @@ Within the Child Page, you will need to now add the following code to connect th
 
 ```
 <script type="text/javascript">
-  $(function() {
 
-    // Connect to the parent page.
-    $.seamless.connect({
-      url: 'index.html'
-    });
+  // Connect to the parent page.
+  $.seamless.connect({
+    url: 'index.html'
   });
 </script>
 ```
