@@ -7,6 +7,7 @@ A __seamless iframe__ makes it so that visitors are unable to distinguish betwee
   * Auto-resizing the iframe to fit the contents of the child page.
   * Loading indicator when the child page is loading.
   * Auto failsafe to open iframe in separate window in case of error.
+  * Easily manage multiple iframes on the same page.
   * Allow the child page to pop out of the parent page.
 
 Definitions

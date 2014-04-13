@@ -504,7 +504,6 @@ SeamlessConnection.prototype.send = function(pm) {
     pm.url = this.url;
     pm.type = pm.type || 'seamless_data';
     pm.data = pm.data || {};
-    pm.data.__href = window.location.href;
     pm.data.__id = this.id;
     $.pm(pm);
   }
@@ -595,8 +594,66 @@ SeamlessConnection.prototype.setActive = function(active) {
     ].join(','));
   };
 
-  // Keep track of all seamless connections.
-  var seamlessConnections = [];
+  // Keep track of the next connection ID.
+  var seamlessFrames = [];
+  var nextConnectionId = 1;
+  var connecting = false;
+
+  // Call when each child is ready.
+  $.pm.bind('seamless_ready', function() {
+
+    // Only do this if we are not already connecting.
+    if (!connecting) {
+
+      // Say we are connecting.
+      connecting = true;
+
+      // Iterate through all of our iframes.
+      for (var i in seamlessFrames) {
+
+        // Get the iframe.
+        var iframe = seamlessFrames[i];
+
+        // If no connection ID is established, then set it.
+        if (!iframe.connection.id) {
+          iframe.connection.id = nextConnectionId++;
+        }
+
+        // Send the connection message to the child page.
+        $.pm({
+          type: 'seamless_connect',
+          target: iframe.connection.target,
+          url: iframe.connection.url,
+          data: {id : iframe.connection.id}
+        });
+      }
+
+      // Say we are no longer connecting.
+      connecting = false;
+    }
+  });
+
+  // Handle the child update message.
+  $.pm.bind('seamless_update', function(data, event) {
+
+    // Iterate through all of our iframes.
+    for (var i in seamlessFrames) {
+
+      // Get the iframe.
+      var iframe = seamlessFrames[i];
+
+      // Only process if the connection ID's match.
+      if (iframe.connection.id === data.__id) {
+
+        // Call this iframes update
+        return iframe.seamless_update(data, event);
+      }
+    }
+
+    // Return that nothing was done.
+    data.height = 0;
+    return data;
+  });
 
   /**
    * Create the seamless.js plugin.
@@ -633,6 +690,9 @@ SeamlessConnection.prototype.setActive = function(active) {
     // Only work with the first iframe object.
     var iframe = $(this).eq(0);
 
+    // Add this to the global seamless frames object.
+    seamlessFrames.push(iframe);
+
     // Get the name of the iframe.
     var id = iframe.attr('name') || iframe.attr('id');
 
@@ -640,17 +700,17 @@ SeamlessConnection.prototype.setActive = function(active) {
     var src = iframe.attr('src');
 
     // The connection object.
-    var connection = new SeamlessConnection(window.frames[id], src);
+    iframe.connection = new SeamlessConnection(window.frames[id], src);
 
     // Set the connectionId.
-    connection.id =  SeamlessBase.getParam('iframeId', src) || src;
+    iframe.connection.id =  SeamlessBase.getParam('iframeId', src) || src;
 
     // Assign the send and receive functions to the iframe.
     iframe.send = function(pm) {
-      connection.send.call(connection, pm);
+      iframe.connection.send.call(iframe.connection, pm);
     };
     iframe.receive = function(type, callback) {
-      connection.receive.call(connection, type, callback);
+      iframe.connection.receive.call(iframe.connection, type, callback);
     };
 
     // Add the necessary attributes.
@@ -742,40 +802,28 @@ SeamlessConnection.prototype.setActive = function(active) {
       }, 30000);
     }
 
-    // Handle the child update message.
-    $.pm.bind('seamless_update', function(data, event) {
+    /**
+     * Called when this iframe is updated with the child.
+     *
+     * @param data
+     * @param event
+     */
+    iframe.seamless_update = function(data, event) {
 
       // See if we are loading.
       if (isLoading) {
 
-        // Only establish a connection if the id isn't set, and
-        // if the href of the page matches that of the iframe src.
-        if (!data.__id && (data.__href.search(src) !== -1)) {
+        // Remove the loading indicator.
+        loading.remove();
+        isLoading = false;
+        iframe.connection.setActive(true);
 
-          // Set the connection id.
-          data.__id = connection.id;
-        }
-
-        // Make sure the connection Id's match.
-        if (data.__id == connection.id) {
-
-          // Remove the loading indicator.
-          loading.remove();
-          isLoading = false;
-          connection.setActive(true);
-
-          // Trigger that a connection was made.
-          iframe.trigger('connected');
-        }
-        else {
-
-          // Report that nothing was done.
-          data.height = 0;
-        }
+        // Trigger that a connection was made.
+        iframe.trigger('connected');
       }
 
       // If the height is greater than 0, then update.
-      if ((data.__id == connection.id) && (data.height > 0)) {
+      if (data.height > 0) {
 
         // Set the iframe height.
         iframe.height(data.height).attr('height', data.height + 'px');
@@ -783,7 +831,7 @@ SeamlessConnection.prototype.setActive = function(active) {
 
       // Return the data.
       return data;
-    });
+    };
 
     // Return the iframe.
     return iframe;

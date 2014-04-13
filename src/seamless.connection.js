@@ -39,7 +39,6 @@ SeamlessConnection.prototype.send = function(pm) {
     pm.url = this.url;
     pm.type = pm.type || 'seamless_data';
     pm.data = pm.data || {};
-    pm.data.__href = window.location.href;
     pm.data.__id = this.id;
     $.pm(pm);
   }

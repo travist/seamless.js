@@ -504,7 +504,6 @@ SeamlessConnection.prototype.send = function(pm) {
     pm.url = this.url;
     pm.type = pm.type || 'seamless_data';
     pm.data = pm.data || {};
-    pm.data.__href = window.location.href;
     pm.data.__id = this.id;
     $.pm(pm);
   }
@@ -651,11 +650,6 @@ SeamlessConnection.prototype.setActive = function(active) {
               },
               success: function(data) {
 
-                // Set the connection id.
-                if (data.__id && !connection.id) {
-                  connection.id = data.__id;
-                }
-
                 // Set the height.
                 height = data.height;
 
@@ -674,8 +668,37 @@ SeamlessConnection.prototype.setActive = function(active) {
           heightTimer = setTimeout(update, options.update);
         };
 
-        // Call the update.
-        update();
+        /**
+         * Send a message that we are ready.
+         */
+        var sendReady = function() {
+
+          // Only send if the connection ID hasn't been established.
+          if (!connection.id) {
+
+            // Send a ready signal to our parent page.
+            connection.send({
+              type: 'seamless_ready',
+              data: {}
+            });
+
+            // Check again after 200ms.
+            setTimeout(sendReady, 200);
+          }
+        };
+
+        // Listen for the connect event.
+        $.pm.bind('seamless_connect', function(data, event) {
+
+          // Set the connection ID.
+          connection.id = data.id;
+
+          // Call the update.
+          update();
+        });
+
+        // Say that we are ready.
+        sendReady();
       }
 
       // Return the connection.

@@ -1,0 +1,33 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seamless.js | Beautiful, seamless iframes.</title>
+  <link rel="stylesheet" href="../css/foundation.css" />
+  <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="../build/seamless.child.js"></script>
+  <script type="text/javascript">
+    var connection = $.seamless.connect({
+      url: 'index.html',
+      container: 'div.content'
+    });
+  </script>
+</head>
+<body>
+<div class="content">
+  <div class="row">
+    <div class="large-12 columns" style="margin:10px;">
+      <h1></h1>
+      <em>
+        This is the Child Page 2.
+        You can set the header of this page using the input above.
+        Use the swap button to swap the header and image from Child Page 2.
+        You can also pop this page outside of the iframe by clicking <a href="child1.html?noiframe=true">here</a>.
+      </em>
+      <a href="example1.child2.html">Go to child2.html</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
