@@ -56,7 +56,6 @@ You can also pass in options to this jQuery library like so...
 $('#myiframe').seamless({
   loading: 'I am loading!!!!'
 });
-}
 ```
 
 The following parameters are accepted.
@@ -134,7 +133,7 @@ var parent = $.seamless.connect({
 });
 
 // Send a message
-child.send({
+parent.send({
   myparam: 'This is anything you want it to be...'
 });
 
