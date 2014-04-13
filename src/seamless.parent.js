@@ -151,7 +151,7 @@
     var src = iframe.attr('src');
 
     // The connection object.
-    iframe.connection = new SeamlessConnection(window.frames[id], src);
+    iframe.connection = new SeamlessConnection(iframe[0].contentWindow, src);
 
     // Assign the send and receive functions to the iframe.
     iframe.send = function(pm) {
