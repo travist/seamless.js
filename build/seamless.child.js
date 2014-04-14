@@ -695,7 +695,7 @@ SeamlessConnection.prototype.setActive = function(active) {
           if (options.allowStyleInjection && (styles.length > 0)) {
 
             // Inject the styles.
-            styles = (typeof styles == 'string') ? styles : styles.join(';');
+            styles = (typeof styles == 'string') ? styles : styles.join('');
 
             // Keep them from escaping the styles tag.
             styles = styles.replace(/[<>]/g, '');
