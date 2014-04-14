@@ -7,6 +7,7 @@ A __seamless iframe__ makes it so that visitors are unable to distinguish betwee
   * Auto-resizing the iframe to fit the contents of the child page.
   * Loading indicator when the child page is loading.
   * Auto failsafe to open iframe in separate window in case of error.
+  * Inject CSS styles into the child pages.
   * Easily manage multiple iframes on the same page.
   * Allow the child page to pop out of the parent page.
 
@@ -62,6 +63,7 @@ The following parameters are accepted.
 
   * __loading__ - (string) The text to show when the child page is loading.
   * __spinner__ - (string) The url of the spinner GIF that is shown when the child page is loading.
+  * __styles__ - (array of strings) The styles to inject into the child page.
   * __fallback__ - (boolean) If the fallback functionality is enabled.  Default true.
   * __fallbackParams__ - (string) Additional query params to attach to the fallback window when it is opened.
   * __fallbackText__ - (string) A message to show below the child iframe to offer assistance if they are having problems.
@@ -96,6 +98,7 @@ The following parameters are accepted.
   * __url__ - REQUIRED (string) The url of the parent page to connect to.
   * __container__ - (string) The container for the main content on the page which determines the height of the page.
   * __update__ - (int) The milliseconds that an update is created from the child to the parent.
+  * __allowStyleInjection__ - (bool) If this page should allow injected styles.
 
 
 ## Communicate ##

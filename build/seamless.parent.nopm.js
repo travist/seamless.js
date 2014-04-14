@@ -191,7 +191,10 @@ SeamlessConnection.prototype.setActive = function(active) {
           type: 'seamless_connect',
           target: iframe.connection.target,
           url: iframe.connection.url,
-          data: {id : iframe.connection.id}
+          data: {
+            id : iframe.connection.id,
+            styles: iframe.seamless_options.styles
+          }
         });
       }
 
@@ -231,6 +234,7 @@ SeamlessConnection.prototype.setActive = function(active) {
     var defaults = {
       loading: 'Loading ...',
       spinner: 'http://www.travistidwell.com/seamless.js/src/loader.gif',
+      styles: [],
       fallback: true,
       fallbackParams: '',
       fallbackText: '',
@@ -256,6 +260,9 @@ SeamlessConnection.prototype.setActive = function(active) {
 
     // Only work with the first iframe object.
     var iframe = $(this).eq(0);
+
+    // Set the seamless_options in the iframe.
+    iframe.seamless_options = options;
 
     // Add this to the global seamless frames object.
     seamlessFrames.push(iframe);

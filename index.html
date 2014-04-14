@@ -37,6 +37,17 @@
         });
 
         /**
+         * Inject styles.
+         */
+        $('#injectstyles').click(function(event) {
+          event.preventDefault();
+          child2.send({
+            type: 'seamless_styles',
+            data: $('#childstyles').val()
+          });
+        });
+
+        /**
          * When they click the swap button.
          */
         $('#swap').click(function(event) {
@@ -88,6 +99,7 @@
           <li>Auto-resizing the iframe to fit the contents of the child page.</li>
           <li>Loading indicator when the child page is loading.</li>
           <li>Auto failsafe to open iframe in separate window in case of error.</li>
+          <li>Inject CSS styles into the child pages.</li>
           <li>Easily manage multiple iframes on the same page.</li>
           <li>Allow the child page to pop out of the parent page.</li>
         </ul></p>
@@ -110,7 +122,17 @@
           </div>
         </div>
         <div class="large-5 columns">
-          <a href="#" id="addimage" class="large-8 button expand">Add an image to Child Page 2</a>
+          <div class="row">
+            <a href="#" id="addimage" class="large-8 button expand">Add an image to Child Page 2</a>
+          </div>
+          <div class="row">
+            <div class="small-12">
+              <input id="childstyles" type="text" value="div.content { background-color: #6e6; }" placeholder="Enter a style to inject in Child Page 2.">
+            </div>
+            <div class="small-12">
+              <a href="#" id="injectstyles" class="button postfix">Inject Styles in Child Page 2</a>
+            </div>
+          </div>
         </div>
       </div>
       <div class="large-5 columns">

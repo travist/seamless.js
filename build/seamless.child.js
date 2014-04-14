@@ -570,14 +570,17 @@ SeamlessConnection.prototype.setActive = function(active) {
      */
     options: {
 
-      /** The URL of the parent. **/
+      /** The URL of the parent. */
       url: '',
 
-      /** The HTML container of the body content. **/
+      /** The HTML container of the body content. */
       container: 'body',
 
-      /** The time interval to update the iframe. **/
-      update: 200
+      /** The time interval to update the iframe. */
+      update: 200,
+
+      /** Allow styles to be injected. */
+      allowStyleInjection: false
     },
 
     /**
@@ -626,6 +629,11 @@ SeamlessConnection.prototype.setActive = function(active) {
         // Update the parent iframe container.
         var update = function() {
 
+          // Clear the timer if it exists.
+          if (heightTimer) {
+            clearTimeout(heightTimer);
+          }
+
           // Get the new height of the child.
           var newHeight = $(container).outerHeight(true);
           newHeight = (newHeight > 100) ? newHeight : 100;
@@ -653,11 +661,6 @@ SeamlessConnection.prototype.setActive = function(active) {
             });
           }
 
-          // Clear the timer if it exists.
-          if (heightTimer) {
-            clearTimeout(heightTimer);
-          }
-
           // Update again after 500ms.
           heightTimer = setTimeout(update, options.update);
         };
@@ -681,11 +684,52 @@ SeamlessConnection.prototype.setActive = function(active) {
           }
         };
 
+        /**
+         * Inject styles into this page.
+         *
+         * @param styles
+         */
+        var injectStyles = function(styles) {
+
+          // See if they wish to inject styles into this page.
+          if (options.allowStyleInjection && (styles.length > 0)) {
+
+            // Inject the styles.
+            styles = (typeof styles == 'string') ? styles : styles.join(';');
+
+            // Keep them from escaping the styles tag.
+            styles = styles.replace(/[<>]/g, '');
+
+            // See if there are new styles to inject.
+            var injectedStyles = $('style#injected-styles');
+            if (injectedStyles.length > 0) {
+              injectedStyles.html(styles);
+            }
+            else {
+
+              // Inject the styles.
+              $('head').append($(document.createElement('style')).attr({
+                type: 'text/css',
+                id: 'injected-styles'
+              }).append(styles));
+            }
+          }
+        };
+
+        // Listen for inject styles command.
+        $.pm.bind('seamless_styles', function(data) {
+          injectStyles(data);
+          update();
+        });
+
         // Listen for the connect event.
         $.pm.bind('seamless_connect', function(data, event) {
 
           // Set the connection ID.
           connection.id = data.id;
+
+          // Inject styles if they wish.
+          injectStyles(data.styles);
 
           // Call the update.
           update();
