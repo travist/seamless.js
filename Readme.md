@@ -49,6 +49,8 @@ You can now use the following code within the Parent Page to turn your iframes i
     $('#myiframe').seamless();
   });
 </script>
+
+<iframe id="myiframe" src="childpage.html"></iframe>
 ```
 
 You can also pass in options to this jQuery library like so...
