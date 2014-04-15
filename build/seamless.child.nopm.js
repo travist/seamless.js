@@ -205,9 +205,6 @@ SeamlessConnection.prototype.setActive = function(active) {
         // The update function.
         var sendingUpdate = false;
         var container = options.container;
-        if (!(container instanceof jQuery)) {
-          container = $(container);
-        }
         var height = 0;
         var heightTimer = 0;
 
@@ -220,7 +217,7 @@ SeamlessConnection.prototype.setActive = function(active) {
           }
 
           // Get the new height of the child.
-          var newHeight = container.outerHeight(true);
+          var newHeight = $(container).outerHeight(true);
           newHeight = (newHeight > 100) ? newHeight : 100;
 
           // If the height are different.

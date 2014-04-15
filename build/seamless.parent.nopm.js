@@ -216,7 +216,9 @@ SeamlessConnection.prototype.setActive = function(active) {
         };
 
         // Set the connection target.
-        iframe.connection.target = iframe[0].contentWindow;
+        if (!iframe.connection.target) {
+          iframe.connection.target = iframe[0].contentWindow;
+        }
 
         // Send the connection message to the child page.
         $.pm({
