@@ -52,7 +52,7 @@
       options = this.options;
 
       // The connection object.
-      var connection = new SeamlessConnection(
+      var connection = new $.SeamlessConnection(
         window.parent,
         options.url
       );
@@ -61,7 +61,7 @@
       connection.setActive(true);
 
       // See if this page should not be iframed.
-      var noiframe = SeamlessBase.getParam('noiframe').toString();
+      var noiframe = $.SeamlessBase.getParam('noiframe').toString();
       if (noiframe === '1' || noiframe.toLowerCase() === 'true') {
         connection.send({
           type: 'seamless_noiframe',

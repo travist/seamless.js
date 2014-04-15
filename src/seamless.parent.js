@@ -1,4 +1,4 @@
-(function($) {
+(function(window, document, $, undefined) {
 
   // Make sure we have the $.pm module loaded.
   if (!$.hasOwnProperty('pm')) {
@@ -180,7 +180,7 @@
     var src = iframe.attr('src');
 
     // The connection object.
-    iframe.connection = new SeamlessConnection(iframe[0].contentWindow, src);
+    iframe.connection = new $.SeamlessConnection(iframe[0].contentWindow, src);
 
     // Assign the send and receive functions to the iframe.
     iframe.send = function(pm) {
@@ -310,4 +310,4 @@
     // Return the iframe.
     return iframe;
   };
-})(jQuery);
+})(window, document, jQuery);
