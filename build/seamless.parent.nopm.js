@@ -215,8 +215,8 @@ SeamlessConnection.prototype.setActive = function(active) {
           styles: iframe.seamless_options.styles
         };
 
-        // Trigger an event.
-        iframe.trigger('connected');
+        // Set the connection target.
+        iframe.connection.target = iframe[0].contentWindow;
 
         // Send the connection message to the child page.
         $.pm({
@@ -226,6 +226,9 @@ SeamlessConnection.prototype.setActive = function(active) {
           data: connectData,
           success: onSuccess(iframe)
         });
+
+        // Trigger an event.
+        iframe.trigger('connected');
       }
 
       // Say we are no longer connecting.
