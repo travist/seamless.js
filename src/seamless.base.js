@@ -24,5 +24,19 @@ var SeamlessBase = {
     else {
       return decodeURIComponent(results[1].replace(/\+/g, ' '));
     }
+  },
+
+  /**
+   * Determine if an object is empty.
+   *
+   * @param object obj
+   *   The object to check to see if it is empty.
+   */
+  isEmptyObject: function(obj) {
+    var name;
+    for (name in obj) {
+      return false;
+    }
+    return true;
   }
 };

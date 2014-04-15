@@ -59,6 +59,15 @@
       // Say we are connecting.
       connecting = true;
 
+      // Create the onSuccess callback.
+      var onSuccess = function(iframe) {
+        return function(data) {
+          if (iframe.seamless_options.onConnect) {
+            iframe.seamless_options.onConnect(data);
+          }
+        };
+      };
+
       // Iterate through all of our iframes.
       for (var i in seamlessFrames) {
 
@@ -70,15 +79,22 @@
           iframe.connection.id = getConnectionId();
         }
 
+        // Setup the connection data.
+        var connectData = {
+          id : iframe.connection.id,
+          styles: iframe.seamless_options.styles
+        };
+
+        // Trigger an event.
+        iframe.trigger('connected');
+
         // Send the connection message to the child page.
         $.pm({
           type: 'seamless_connect',
           target: iframe.connection.target,
           url: iframe.connection.url,
-          data: {
-            id : iframe.connection.id,
-            styles: iframe.seamless_options.styles
-          }
+          data: connectData,
+          success: onSuccess(iframe)
         });
       }
 
@@ -118,6 +134,7 @@
     var defaults = {
       loading: 'Loading ...',
       spinner: 'http://www.travistidwell.com/seamless.js/src/loader.gif',
+      onConnect: null,
       styles: [],
       fallback: true,
       fallbackParams: '',
@@ -272,9 +289,6 @@
         loading.remove();
         isLoading = false;
         iframe.connection.setActive(true);
-
-        // Trigger that a connection was made.
-        iframe.trigger('connected');
       }
 
       // If the height is greater than 0, then update.

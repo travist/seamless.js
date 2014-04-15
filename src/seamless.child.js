@@ -26,7 +26,13 @@
       update: 200,
 
       /** Allow styles to be injected. */
-      allowStyleInjection: false
+      allowStyleInjection: false,
+
+      /** Called when an update is triggered to the parent. */
+      onUpdate: null,
+
+      /** Called wehn the parent connects with this iframe. */
+      onConnect: null
     },
 
     /**
@@ -69,6 +75,9 @@
         // The update function.
         var sendingUpdate = false;
         var container = options.container;
+        if (!(container instanceof jQuery)) {
+          container = $(container);
+        }
         var height = 0;
         var heightTimer = 0;
 
@@ -81,7 +90,7 @@
           }
 
           // Get the new height of the child.
-          var newHeight = $(container).outerHeight(true);
+          var newHeight = container.outerHeight(true);
           newHeight = (newHeight > 100) ? newHeight : 100;
 
           // If the height are different.
@@ -90,12 +99,18 @@
             // Sending the update.
             sendingUpdate = true;
 
+            // The data to send to the parent.
+            var data = { height: newHeight };
+
+            // If they wish to update.
+            if (options.onUpdate) {
+              options.onUpdate(data);
+            }
+
             // Send the update to the parent.
             connection.send({
               type: 'seamless_update',
-              data: {
-                height: newHeight
-              },
+              data: data,
               success: function(data) {
 
                 // Set the height.
@@ -174,11 +189,19 @@
           // Set the connection ID.
           connection.id = data.id;
 
+          // If they wish to get event when the iframe connects.
+          if (options.onConnect) {
+            options.onConnect(data);
+          }
+
           // Inject styles if they wish.
           injectStyles(data.styles);
 
           // Call the update.
           update();
+
+          // Return the data to finish the connection.
+          return data;
         });
 
         // Say that we are ready.
