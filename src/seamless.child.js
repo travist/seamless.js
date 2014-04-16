@@ -164,18 +164,27 @@
             // Keep them from escaping the styles tag.
             styles = styles.replace(/[<>]/g, '');
 
+            // Set the styles.
+            var setStyle = function(element, styles) {
+              if(element.styleSheet) {
+                element.styleSheet.cssText = styles;
+              } else {
+                $(element).html(styles);
+              }
+            };
+
             // See if there are new styles to inject.
             var injectedStyles = $('style#injected-styles');
             if (injectedStyles.length > 0) {
-              injectedStyles.html(styles);
+              setStyle(injectedStyles[0], styles);
             }
             else {
 
               // Inject the styles.
-              $('head').append($(document.createElement('style')).attr({
-                type: 'text/css',
-                id: 'injected-styles'
-              }).append(styles));
+              var css = document.createElement('style');
+              css.setAttribute('type', 'text/css');
+              setStyle(css, styles);
+              $('head').append(css);
             }
           }
         };
