@@ -768,7 +768,12 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
       'scrolling': 'no',
       'seamless': 'seamless',
       'width': '100%',
-      'height': '0px'
+      'height': '0px',
+      'marginheight': '0',
+      'marginwidth': '0',
+      'frameborder': '0',
+      'horizontalscrolling': 'no',
+      'verticalscrolling': 'no'
     }).css({
       border: 'none',
       overflowY: 'hidden'
@@ -801,18 +806,18 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
 
       // Create the fallback link.
       var fallbackLink = $(document.createElement('a')).attr({
-        class: 'seamless.js-fallback-link',
-        href: '#',
-        onclick: 'seamlessOpenFallback("' + src + '", event)'
+        'class': 'seamless-fallback-link',
+        'href': '#',
+        'onclick': 'seamlessOpenFallback("' + src + '", event)'
       });
       fallbackLink.append(options.fallbackLinkText);
 
       // Create the fallback markup.
       var fallback = $(document.createElement('div')).attr({
-        class: 'seamless.js-fallback'
+        'class': 'seamless-fallback'
       });
       fallback.append($(document.createElement('em')).attr({
-        style: 'padding: 5px;'
+        'style': 'padding: 5px;'
       }));
 
       // Set the iframe.

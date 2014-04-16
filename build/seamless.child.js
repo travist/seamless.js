@@ -696,6 +696,12 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
           heightTimer = setTimeout(update, options.update);
         };
 
+        // Add some styles to the body to support seamless styles.
+        $('html').attr({
+          'style': 'overflow:hidden;' + $('body').attr('html'),
+          'scroll': 'no'
+        });
+
         /**
          * Send a message that we are ready.
          */
