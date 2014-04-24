@@ -316,9 +316,11 @@
             else {
 
               // Inject the styles.
-              var css = document.createElement('style');
-              css.setAttribute('type', 'text/css');
-              setStyle(css, styles);
+              var css = $(document.createElement('style')).attr({
+                'type': 'text/css',
+                'id': 'injected-styles'
+              });
+              setStyle(css[0], styles);
               $('head').append(css);
             }
           }
