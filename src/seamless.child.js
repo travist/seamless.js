@@ -101,11 +101,8 @@
       if (options.requireCookies) {
 
         // Set a cookie and read a cookie.
-        document.cookie = 'cookieTest=true';
-        var cookies = document.cookie;
-
-        // Look for the cookie we just tried to set.
-        if (!cookies.match(/cookieTest\=true/g)) {
+        document.cookie="cookieTest=1";
+        if (document.cookie.indexOf("cookieTest") === -1) {
 
           // Show an error message.
           showError(

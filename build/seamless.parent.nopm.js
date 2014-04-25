@@ -279,6 +279,7 @@
         'border: 1px solid #ccc',
         'background-color: #fff',
         'padding: 5px 10px',
+        'text-decoration: none',
         'font-size: 12px',
         'line-height: 1.5',
         'border-radius: 6px',
