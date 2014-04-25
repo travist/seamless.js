@@ -186,7 +186,7 @@ The following parameters are accepted.
     * _type_: bool
     * _required_: false
     * _default_: false
-  * __requireCookies__ - If the child page requires cookies (See ![#child-iframe-cookie-problem](Child iFrame Cookie Problem) section)
+  * __requireCookies__ - If the child page requires cookies (See [Child iFrame Cookie Problem](https://github.com/travist/seamless.js#child-iframe-cookie-problem) section)
     * _type_: bool
     * _required_: false
     * _default_: false
