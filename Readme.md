@@ -186,7 +186,7 @@ The following parameters are accepted.
     * _type_: bool
     * _required_: false
     * _default_: false
-  * __requireCookies__ - If the child page requires cookies (See __Child iFrame Cookie Problem__ section)
+  * __requireCookies__ - If the child page requires cookies (See ![#child-iframe-cookie-problem](Child iFrame Cookie Problem) section)
     * _type_: bool
     * _required_: false
     * _default_: false
@@ -314,5 +314,4 @@ a default option.  To turn this on, add the following parameter to the child ifr
 $.seamless({
   requireCookies: true
 });
-}
 ```
