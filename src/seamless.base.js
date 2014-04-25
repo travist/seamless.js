@@ -28,6 +28,16 @@
     },
 
     /**
+     * Filters text to remove markup tags.
+     *
+     * @param text
+     * @returns {XML|string|*|void}
+     */
+    filterText: function(text) {
+      return text.replace(/[<>]/g, '');
+    },
+
+    /**
      * Determine if an object is empty.
      *
      * @param object obj

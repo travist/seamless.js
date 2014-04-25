@@ -1,0 +1,19 @@
+{{>head}}
+<div class="content">
+    <div class="row panel">
+        <div class="large-12 columns">
+            <form method="post">
+            {{#remembered}}
+                <h2>You are remembered...</h2>
+                <input name="submit_again" type="submit" class="button" value="Submit Again"/>
+                <a href="/forget" class="button">Forget</a>
+            {{/remembered}}
+            {{^remembered}}
+                <h2>Who are you?</h2>
+                <input name="remember" type="submit" class="button" value="Remember Me"/>
+            {{/remembered}}
+            </form>
+        </div>
+    </div>
+</div>
+{{>foot}}

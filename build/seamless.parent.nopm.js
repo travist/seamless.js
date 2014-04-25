@@ -28,6 +28,16 @@
     },
 
     /**
+     * Filters text to remove markup tags.
+     *
+     * @param text
+     * @returns {XML|string|*|void}
+     */
+    filterText: function(text) {
+      return text.replace(/[<>]/g, '');
+    },
+
+    /**
      * Determine if an object is empty.
      *
      * @param object obj
@@ -149,7 +159,7 @@
   });
 
   // Create a way to open the iframe in a separate window.
-  window.seamlessOpenFallback = function(src, event) {
+  window.seamlessOpenFallback = function(src, width, height, event) {
     if (event.preventDefault) {
       event.preventDefault();
       event.stopPropagation();
@@ -158,8 +168,8 @@
       event.returnValue = false;
     }
     window.open(src, '', [
-      'width=960',
-      'height=800',
+      'width=' + width,
+      'height=' + height,
       'menubar=no',
       'titlebar=no',
       'toolbar=no',
@@ -186,7 +196,7 @@
   };
 
   // Call when each child is ready.
-  $.pm.bind('seamless_ready', function() {
+  $.pm.bind('seamless_ready', function(data, event) {
 
     // Only do this if we are not already connecting.
     if (!connecting) {
@@ -194,48 +204,11 @@
       // Say we are connecting.
       connecting = true;
 
-      // Create the onSuccess callback.
-      var onSuccess = function(iframe) {
-        return function(data) {
-          if (iframe.seamless_options.onConnect) {
-            iframe.seamless_options.onConnect(data);
-          }
-        };
-      };
-
       // Iterate through all of our iframes.
       for (var i in seamlessFrames) {
 
-        // Get the iframe.
-        var iframe = seamlessFrames[i];
-
-        // If no connection ID is established, then set it.
-        if (!iframe.connection.id) {
-          iframe.connection.id = getConnectionId();
-        }
-
-        // Setup the connection data.
-        var connectData = {
-          id : iframe.connection.id,
-          styles: iframe.seamless_options.styles
-        };
-
-        // Set the connection target.
-        if (!iframe.connection.target) {
-          iframe.connection.target = iframe[0].contentWindow;
-        }
-
-        // Send the connection message to the child page.
-        $.pm({
-          type: 'seamless_connect',
-          target: iframe.connection.target,
-          url: iframe.connection.url,
-          data: connectData,
-          success: onSuccess(iframe)
-        });
-
-        // Trigger an event.
-        iframe.trigger('connected');
+        // Say that this iframe is ready.
+        seamlessFrames[i].seamless_ready(data, event);
       }
 
       // Say we are no longer connecting.
@@ -265,6 +238,17 @@
     return data;
   });
 
+  // If an error occurs.
+  $.pm.bind('seamless_error', function(data, event) {
+
+    // Iterate through all of our iframes.
+    for (var i in seamlessFrames) {
+
+      // Fallback this iframe.
+      seamlessFrames[i].seamless_error(data, event);
+    }
+  });
+
   /**
    * Create the seamless.js plugin.
    */
@@ -288,7 +272,29 @@
         'color: #3a87ad',
         'background-color: #d9edf7',
         'border-color: #bce8f1'
-      ]
+      ],
+      fallbackLinkStyles: [
+        'display: inline-block',
+        'color: #333',
+        'border: 1px solid #ccc',
+        'background-color: #fff',
+        'padding: 5px 10px',
+        'font-size: 12px',
+        'line-height: 1.5',
+        'border-radius: 6px',
+        'font-weight: 400',
+        'cursor: pointer',
+        '-webkit-user-select: none',
+        '-moz-user-select: none',
+        '-ms-user-select: none',
+        'user-select: none'
+      ],
+      fallbackLinkHoverStyles: [
+        'background-color:#ebebeb',
+        'border-color:#adadad'
+      ],
+      fallbackWindowWidth: 960,
+      fallbackWindowHeight: 800
     };
 
     // Set the defaults if they are not provided.
@@ -366,21 +372,52 @@
         src += options.fallbackParams;
       }
 
+      var fallbackStyles = $('#seamless-fallback-styles');
+      if (!fallbackStyles.length) {
+
+        // Get styles from a setting.
+        var getStyles = function(stylesArray) {
+
+          // Join the array, and strip out markup.
+          return $.SeamlessBase.filterText(stylesArray.join(';'));
+        };
+
+        // Create the fallback styles.
+        fallbackStyles = $(document.createElement('style')).attr({
+          'id': 'seamless-fallback-styles',
+          'type': 'text/css'
+        }).html(
+          '.seamless-fallback.seamless-styles {' + getStyles(options.fallbackStyles) + '}' +
+          '.seamless-fallback em { padding: 5px; }' +
+          '.seamless-fallback-link.seamless-styles {' + getStyles(options.fallbackLinkStyles) + '}' +
+          '.seamless-fallback-link.seamless-styles:hover {' + getStyles(options.fallbackLinkHoverStyles) + '}'
+        );
+
+        // Add the styles before the iframe.
+        iframe.before(fallbackStyles);
+      }
+
+      // The arguments to pass to the onclick event.
+      var onClickArgs = [
+        '"' + src + '"',
+        options.fallbackWindowWidth,
+        options.fallbackWindowHeight
+      ];
+
       // Create the fallback link.
       var fallbackLink = $(document.createElement('a')).attr({
         'class': 'seamless-fallback-link',
         'href': '#',
-        'onclick': 'seamlessOpenFallback("' + src + '", event)'
+        'onclick': 'seamlessOpenFallback(' + onClickArgs.join(',') + ', event)'
       });
-      fallbackLink.append(options.fallbackLinkText);
 
       // Create the fallback markup.
       var fallback = $(document.createElement('div')).attr({
         'class': 'seamless-fallback'
       });
-      fallback.append($(document.createElement('em')).attr({
-        'style': 'padding: 5px;'
-      }));
+
+      // Add the emphasis element for the text.
+      fallback.append($(document.createElement('em')));
 
       // Set the iframe.
       iframe.after(fallback);
@@ -389,24 +426,49 @@
        * Set the fallback message for the iframe.
        * @param msg
        */
-      var setFallback = function(msg, info) {
-        fallback.attr('style', info ? options.fallbackStyles.join(';') : '');
+      var setFallback = function(msg, linkText, afterText, showStyles) {
+
+        // If they wish to show the styles.
+        if (showStyles) {
+          fallback.addClass('seamless-styles');
+          fallbackLink.addClass('seamless-styles');
+        }
+        else {
+          fallback.removeClass('seamless-styles');
+          fallbackLink.removeClass('seamless-styles');
+        }
+
+        // Set the text for the fallback.
         fallback.find('em')
-          .text(msg + ' ')
-          .append(fallbackLink)
-          .append(options.fallbackLinkAfter);
+          .text($.SeamlessBase.filterText(msg) + ' ')
+          .append(fallbackLink.text($.SeamlessBase.filterText(linkText)))
+          .append($.SeamlessBase.filterText(afterText));
       };
 
       // Set the default fallback.
       if (options.fallbackText) {
-        setFallback(options.fallbackText, false);
+
+        // Create the fallback.
+        setFallback(
+          options.fallbackText,
+          options.fallbackLinkText,
+          options.fallbackLinkAfter,
+          false
+        );
       }
 
       // Handle all errors with a fallback message.
       $(window).error(function() {
         var msg = 'An error has been detected on this page, ';
         msg += 'which may cause problems with the operation of this application.';
-        setFallback(msg, true);
+
+        // Create the fallback.
+        setFallback(
+          msg,
+          options.fallbackLinkText,
+          options.fallbackLinkAfter,
+          true
+        );
       });
 
       // If nothing happens after 30 seconds, then assume something went wrong.
@@ -414,10 +476,55 @@
         if (isLoading) {
           loading.remove();
           isLoading = false;
-          setFallback('An error has been detected on this page.', true);
+
+          // Create the fallback.
+          setFallback(
+            'An error has been detected on this page.',
+            options.fallbackLinkText,
+            options.fallbackLinkAfter,
+            true
+          );
         }
       }, 30000);
     }
+
+    /**
+     * Called when the child page is ready.
+     */
+    iframe.seamless_ready = function(data, event) {
+
+      // If no connection ID is established, then set it.
+      if (!iframe.connection.id) {
+        iframe.connection.id = getConnectionId();
+      }
+
+      // Setup the connection data.
+      var connectData = {
+        id : iframe.connection.id,
+        styles: iframe.seamless_options.styles
+      };
+
+      // Set the connection target.
+      if (!iframe.connection.target) {
+        iframe.connection.target = iframe[0].contentWindow;
+      }
+
+      // Send the connection message to the child page.
+      $.pm({
+        type: 'seamless_connect',
+        target: iframe.connection.target,
+        url: iframe.connection.url,
+        data: connectData,
+        success: function(data) {
+          if (iframe.seamless_options.onConnect) {
+            iframe.seamless_options.onConnect(data);
+          }
+        }
+      });
+
+      // Trigger an event.
+      iframe.trigger('connected');
+    };
 
     /**
      * Called when this iframe is updated with the child.
@@ -445,6 +552,20 @@
 
       // Return the data.
       return data;
+    };
+
+    /**
+     * Open this iframe in a fallback window.
+     */
+    iframe.seamless_error = function(data, event) {
+
+      // Remove the loader and hide the iframe.
+      loading.remove();
+      iframe.hide();
+      isLoading = false;
+
+      // Set the fallback text.
+      setFallback(data.msg, data.linkText, data.afterText, true);
     };
 
     // Return the iframe.

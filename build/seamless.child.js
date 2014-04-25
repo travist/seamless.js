@@ -466,6 +466,16 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     },
 
     /**
+     * Filters text to remove markup tags.
+     *
+     * @param text
+     * @returns {XML|string|*|void}
+     */
+    filterText: function(text) {
+      return text.replace(/[<>]/g, '');
+    },
+
+    /**
      * Determine if an object is empty.
      *
      * @param object obj
@@ -601,6 +611,18 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
       /** Allow styles to be injected. */
       allowStyleInjection: false,
 
+      /** If this child page requires cookies. */
+      requireCookies: false,
+
+      /** The message to show when the cookie fails. */
+      cookieFallbackMsg: 'Your browser requires this page to be opened in a separate window.',
+
+      /** The text to show in the link for the cookie fallback. */
+      cookieFallbackLinkMsg: 'Click Here',
+
+      /** The text to show after the fallback link. */
+      cookieFallbackAfterMsg: ' to open in a separate window.',
+
       /** Called when an update is triggered to the parent. */
       onUpdate: null,
 
@@ -630,8 +652,52 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         options.url
       );
 
+      // If an error occured.
+      var errorOccured = false;
+
+      /**
+       * Show an error message on the parent page.
+       * @param msg
+       * @param linkMsg
+       * @param afterMsg
+       */
+      var showError = function(msg, linkText, afterText) {
+
+        // Say that an error occured.
+        errorOccured = true;
+
+        // Send the error to the parent.
+        connection.send({
+          type: 'seamless_error',
+          data: {
+            msg: msg,
+            linkText: linkText,
+            afterText: afterText
+          }
+        });
+      };
+
       // Parent connections are always active.
       connection.setActive(true);
+
+      // If we require cookies, perform a quick cookie test.
+      if (options.requireCookies) {
+
+        // Set a cookie and read a cookie.
+        document.cookie = 'cookieTest=true';
+        var cookies = document.cookie;
+
+        // Look for the cookie we just tried to set.
+        if (!cookies.match(/cookieTest\=true/g)) {
+
+          // Show an error message.
+          showError(
+            options.cookieFallbackMsg,
+            options.cookieFallbackLinkMsg,
+            options.cookieFallbackAfterMsg
+          );
+        }
+      }
 
       // See if this page should not be iframed.
       var noiframe = $.SeamlessBase.getParam('noiframe').toString();
@@ -653,6 +719,11 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
 
         // Update the parent iframe container.
         var update = function() {
+
+          // Don't process if an error occured with this frame.
+          if (errorOccured) {
+            return;
+          }
 
           // Clear the timer if it exists.
           if (heightTimer) {
@@ -705,7 +776,15 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         /**
          * Send a message that we are ready.
          */
-        var sendReady = function() {
+        var sendReady = function(times) {
+
+          // Don't do anything if an error occured.
+          if (errorOccured) {
+            return;
+          }
+
+          // Set the amount of times sendReady is called.
+          times = times || 0;
 
           // Only send if the connection ID hasn't been established.
           if (!connection.id) {
@@ -716,8 +795,14 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
               data: {}
             });
 
-            // Check again after 200ms.
-            setTimeout(sendReady, 200);
+            // Give up after 10 seconds.
+            if (times < 50) {
+
+              // Check again after 200ms.
+              setTimeout(function() {
+                sendReady(++times);
+              }, 200);
+            }
           }
         };
 
@@ -735,7 +820,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
             styles = (typeof styles == 'string') ? styles : styles.join('');
 
             // Keep them from escaping the styles tag.
-            styles = styles.replace(/[<>]/g, '');
+            styles = $.SeamlessBase.filterText(styles);
 
             // Set the styles.
             var setStyle = function(element, styles) {
