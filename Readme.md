@@ -61,17 +61,90 @@ $('#myiframe').seamless({
 });
 ```
 
-The following parameters are accepted.
+The following parameters are accepted.  __name__ - (type | required | default): Description
 
-  * __loading__ - (string) The text to show when the child page is loading.
-  * __spinner__ - (string) The url of the spinner GIF that is shown when the child page is loading.
-  * __styles__ - (array of strings) The styles to inject into the child page.
-  * __fallback__ - (boolean) If the fallback functionality is enabled.  Default true.
-  * __fallbackParams__ - (string) Additional query params to attach to the fallback window when it is opened.
-  * __fallbackText__ - (string) A message to show below the child iframe to offer assistance if they are having problems.
-  * __fallbackLinkText__ - (string) The string to show within the 'Click here' link to open the fallback window.
-  * __fallbackLinkAfter__ - (string) Text to add after the __fallbackLinkText__ link.
-  * __fallbackStyles__ - (array) An array of string styles to add to the fallback text when something bad happens.
+  * __loading__ - The text to show when the child page is loading.
+    * _type_: string
+    * _required_: false
+    * _default_: 'Loading ...'
+  * __spinner__ - The url of the spinner GIF that is shown when the child page is loading.
+    * _type_: string
+    * _required_: false
+    * _default_: 'http://www.travistidwell.com/seamless.js/src/loader.gif'
+  * __onConnect__ - Called when a child iframe has finished connecting.
+    * _type_: function
+    * _required_: false
+    * _default_: null
+  * __styles__ - The styles to inject into the child page.
+    * _type_: array of strings
+    * _required_: false
+    * _default_: []
+  * __fallback__ - If the fallback functionality is enabled.
+    * _type_: bool
+    * _required_: false
+    * _default_: true
+  * __fallbackParams__ - Additional query params to attach to the fallback window when it is opened.
+    * _type_: string
+    * _required_: false
+    * _default_: ''
+  * __fallbackText__ - A message to show below the child iframe to offer assistance if they are having problems.
+    * _type_: string
+    * _required_: false
+    * _default_: ''
+  * __fallbackLinkText__ - The string to show within the 'Click here' link to open the fallback window.
+    * _type_: string
+    * _required_: false
+    * _default_: 'Click Here'
+  * __fallbackLinkAfter__ - Text to add after the __fallbackLinkText__ link.
+    * _type_: string
+    * _required_: false
+    * _default_: ' to open in a separate window.'
+  * __fallbackStyles__ - An array of string styles to add to the fallback text when something bad happens.
+    * _type_: array of strings
+    * _required_: false
+    * _default_: ```[
+      'padding: 15px',
+      'border: 1px solid transparent',
+      'border-radius: 4px',
+      'color: #3a87ad',
+      'background-color: #d9edf7',
+      'border-color: #bce8f1'
+    ]```
+  * __fallbackLinkStyles__ - An array of string styles to add to the fallback link.
+    * _type_: array of strings
+    * _required_: false
+    * _default_: ```[
+      'display: inline-block',
+      'color: #333',
+      'border: 1px solid #ccc',
+      'background-color: #fff',
+      'padding: 5px 10px',
+      'text-decoration: none',
+      'font-size: 12px',
+      'line-height: 1.5',
+      'border-radius: 6px',
+      'font-weight: 400',
+      'cursor: pointer',
+      '-webkit-user-select: none',
+      '-moz-user-select: none',
+      '-ms-user-select: none',
+      'user-select: none'
+    ]```
+  * __fallbackLinkHoverStyles__ - An array of string styles to add to the fallback link on hover.
+    * _type_: array of strings
+    * _required_: false
+    * _default_: ```[
+      'background-color:#ebebeb',
+      'border-color:#adadad'
+    ]```
+  * __fallbackWindowWidth__ - The width of the window that is opened up for the fallback.
+    * _type_: int
+    * _required_: false
+    * _default_: 960
+  * __fallbackWindowHeight__ - The height of the window that is opened up for the fallback.
+    * _type_: int
+    * _required_: false
+    * _default_: 800
 
 ### Connect Child Page to Parent Page ###
 Within the Child Page, you will need to now add the following code to connect the Child Page to the parent page.
@@ -97,10 +170,47 @@ $.seamless.connect({
 
 The following parameters are accepted.
 
-  * __url__ - REQUIRED (string) The url of the parent page to connect to.
-  * __container__ - (string) The container for the main content on the page which determines the height of the page.
-  * __update__ - (int) The milliseconds that an update is created from the child to the parent.
-  * __allowStyleInjection__ - (bool) If this page should allow injected styles.
+  * __url__ - The url of the parent page to connect to.
+    * _type_: string
+    * _required_: true
+    * _default_: ''
+  * __container__ - The container for the main content on the page which determines the height of the page.
+    * _type_: string
+    * _required_: false
+    * _default_: 'body'
+  * __update__ - The milliseconds that an update is created from the child to the parent.
+    * _type_: int
+    * _required_: false
+    * _default_: 200
+  * __allowStyleInjection__ - If this page should allow injected styles.
+    * _type_: bool
+    * _required_: false
+    * _default_: false
+  * __requireCookies__ - If the child page requires cookies (See __Child iFrame Cookie Problem__ section)
+    * _type_: bool
+    * _required_: false
+    * _default_: false
+  * __cookieFallbackMsg__ - The message to show if the cookie test fails.
+    * _type_: string
+    * _required_: false
+    * _default_: 'Your browser requires this page to be opened in a separate window.'
+  * __cookieFallbackLinkMsg__ - The text to place inside the link to have them open a new window if the cookie test fails.
+    * _type_: string
+    * _required_: false
+    * _default_: 'Click Here'
+  * __cookieFallbackAfterMsg__ - The text to place after the link when the cookie test fails.
+    * _type_: string
+    * _required_: false
+    * _default_: ' to open in a separate window.'
+  * __onUpdate__ - Callback that is called when an update is triggered to the parent.
+    * _type_: function
+    * _required_: false
+    * _default_: null
+  * __onConnect__ - Called when the parent connects to this iframe.
+    * _type_: function
+    * _required_: false
+    * _default_: null
+
 
 
 ## Communicate ##
@@ -188,4 +298,21 @@ parent.receive(function(data, event) {
     myresponse: "I'm listening..."
   };
 });
+```
+
+### Child iFrame Cookie Problem ###
+Some browsers (Safari) have an issue where by default they do not allow cookies within the
+child iframe if it is a cross-origin domain within the child iframe.  This library solves this
+problem by creating a fallback text to prompt the user to open up the child iframe in a separate
+window.  Although this is not ideal, it is also not malicious where it is performing actions
+without the user knowing and prompts them to actually open up the separate window.
+
+This is only necessary if the child iframe requires cookies, so for that reason, this is not
+a default option.  To turn this on, add the following parameter to the child iframe.
+
+```
+$.seamless({
+  requireCookies: true
+});
+}
 ```
