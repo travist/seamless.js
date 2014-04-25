@@ -9,6 +9,7 @@ A __seamless iframe__ makes it so that visitors are unable to distinguish betwee
   * Auto failsafe to open iframe in separate window in case of error.
   * Inject CSS styles into the child pages.
   * Easily manage multiple iframes on the same page.
+  * Creates a fallback for child pages that block cross-origin cookies. (Safari)
   * Allow the child page to pop out of the parent page.
 
 Definitions
