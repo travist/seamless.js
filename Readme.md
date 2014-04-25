@@ -61,7 +61,7 @@ $('#myiframe').seamless({
 });
 ```
 
-The following parameters are accepted.  __name__ - (type | required | default): Description
+The following parameters are accepted.
 
   * __loading__ - The text to show when the child page is loading.
     * _type_: string
