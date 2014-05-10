@@ -262,7 +262,7 @@ parent.receive(function(data, event) {
 ### Send Responses ###
 The last way to communicate is through a 'send' response, where you can receive a response
 from a send command.  To do this, you simply need to pass along an object to the __send__ method
-with two parameters, _data_ to contain the data, and _complete_ to be called when the resonse has
+with two parameters, _data_ to contain the data, and _success_ to be called when the resonse has
 been made.  Then, within a __receive__ command, you simply return the data you wish to send as
 the response.  The code below shows this best...
 
@@ -274,7 +274,7 @@ child.send({
   data: {
     mydata: 'This is a message'
   },
-  complete: function(data) {
+  success: function(data) {
 
     // 'data' is what was returned from the child 'receive' function.
     console.log(data);
