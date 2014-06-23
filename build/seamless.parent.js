@@ -510,9 +510,9 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
 
         // Add the style to the element.
         if(element.styleSheet) {
-          element.styleSheet.cssText += styles;
+          element.styleSheet.cssText = styles;
         } else {
-          $(element).append(styles);
+          $(element).html(styles);
         }
       }
     },
