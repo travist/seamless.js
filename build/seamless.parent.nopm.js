@@ -260,8 +260,12 @@
       // Iterate through all of our iframes.
       for (var i in seamlessFrames) {
 
-        // Say that this iframe is ready.
-        seamlessFrames[i].seamless_ready(data, event);
+        // Make sure the seamless_ready is a function.
+        if (seamlessFrames.hasOwnProperty(i)) {
+
+          // Say that this iframe is ready.
+          seamlessFrames[i].seamless_ready(data, event);
+        }
       }
 
       // Say we are no longer connecting.
@@ -275,14 +279,17 @@
     // Iterate through all of our iframes.
     for (var i in seamlessFrames) {
 
-      // Get the iframe.
-      var iframe = seamlessFrames[i];
+      if (seamlessFrames.hasOwnProperty(i)) {
 
-      // Only process if the connection ID's match.
-      if (iframe.connection.id === data.__id) {
+        // Get the iframe.
+        var iframe = seamlessFrames[i];
 
-        // Call this iframes update
-        return iframe.seamless_update(data, event);
+        // Only process if the connection ID's match.
+        if (iframe.connection.id === data.__id) {
+
+          // Call this iframes update
+          return iframe.seamless_update(data, event);
+        }
       }
     }
 
@@ -297,8 +304,11 @@
     // Iterate through all of our iframes.
     for (var i in seamlessFrames) {
 
-      // Fallback this iframe.
-      seamlessFrames[i].seamless_error(data, event);
+      if (seamlessFrames.hasOwnProperty(i)) {
+
+        // Fallback this iframe.
+        seamlessFrames[i].seamless_error(data, event);
+      }
     }
   });
 
