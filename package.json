@@ -1,6 +1,6 @@
 {
   "name": "seamless.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "devDependencies": {
     "grunt": "~0.4.4",
     "grunt-contrib-jshint": "~0.10.0",
