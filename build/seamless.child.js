@@ -487,6 +487,59 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         return false;
       }
       return true;
+    },
+
+    /**
+     * Set the styles on an element.
+     *
+     * @param object element
+     *   The DOM Element you would like to set the styles.
+     * @param styles
+     *   The styles to add to the element.
+     */
+    setStyle: function(element, styles) {
+
+      // Make sure they have styles to inject.
+      if (styles.length > 0) {
+
+        // Convert to the right format.
+        styles = (typeof styles == 'string') ? styles : styles.join('');
+
+        // Keep them from escaping the styles tag.
+        styles = $.SeamlessBase.filterText(styles);
+
+        // Add the style to the element.
+        if(element.styleSheet) {
+          element.styleSheet.cssText += styles;
+        } else {
+          $(element).append(styles);
+        }
+      }
+    },
+
+    /**
+     * Provide a cross broser method to inject styles.
+     *
+     * @param array styles
+     *   An array of styles to inject.
+     */
+    injectStyles: function(styles) {
+
+      // See if there are new styles to inject.
+      var injectedStyles = $('style#injected-styles');
+      if (injectedStyles.length > 0) {
+        $.SeamlessBase.setStyle(injectedStyles[0], styles);
+      }
+      else {
+
+        // Inject the styles.
+        var css = $(document.createElement('style')).attr({
+          'type': 'text/css',
+          'id': 'injected-styles'
+        });
+        $.SeamlessBase.setStyle(css[0], styles);
+        $('head').append(css);
+      }
     }
   };
 })(window, document, jQuery);
@@ -797,52 +850,11 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
           }
         };
 
-        /**
-         * Inject styles into this page.
-         *
-         * @param styles
-         */
-        var injectStyles = function(styles) {
-
-          // See if they wish to inject styles into this page.
-          if (options.allowStyleInjection && (styles.length > 0)) {
-
-            // Inject the styles.
-            styles = (typeof styles == 'string') ? styles : styles.join('');
-
-            // Keep them from escaping the styles tag.
-            styles = $.SeamlessBase.filterText(styles);
-
-            // Set the styles.
-            var setStyle = function(element, styles) {
-              if(element.styleSheet) {
-                element.styleSheet.cssText = styles;
-              } else {
-                $(element).html(styles);
-              }
-            };
-
-            // See if there are new styles to inject.
-            var injectedStyles = $('style#injected-styles');
-            if (injectedStyles.length > 0) {
-              setStyle(injectedStyles[0], styles);
-            }
-            else {
-
-              // Inject the styles.
-              var css = $(document.createElement('style')).attr({
-                'type': 'text/css',
-                'id': 'injected-styles'
-              });
-              setStyle(css[0], styles);
-              $('head').append(css);
-            }
-          }
-        };
-
         // Listen for inject styles command.
         $.pm.bind('seamless_styles', function(data) {
-          injectStyles(data);
+          if (options.allowStyleInjection) {
+            $.SeamlessBase.injectStyles(data);
+          }
           update();
         });
 
@@ -864,7 +876,9 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
           });
 
           // Inject styles if they wish.
-          injectStyles(data.styles);
+          if (options.allowStyleInjection) {
+            $.SeamlessBase.injectStyles(data.styles);
+          }
 
           // Call the update.
           update();

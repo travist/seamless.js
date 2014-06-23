@@ -49,6 +49,59 @@
         return false;
       }
       return true;
+    },
+
+    /**
+     * Set the styles on an element.
+     *
+     * @param object element
+     *   The DOM Element you would like to set the styles.
+     * @param styles
+     *   The styles to add to the element.
+     */
+    setStyle: function(element, styles) {
+
+      // Make sure they have styles to inject.
+      if (styles.length > 0) {
+
+        // Convert to the right format.
+        styles = (typeof styles == 'string') ? styles : styles.join('');
+
+        // Keep them from escaping the styles tag.
+        styles = $.SeamlessBase.filterText(styles);
+
+        // Add the style to the element.
+        if(element.styleSheet) {
+          element.styleSheet.cssText += styles;
+        } else {
+          $(element).append(styles);
+        }
+      }
+    },
+
+    /**
+     * Provide a cross broser method to inject styles.
+     *
+     * @param array styles
+     *   An array of styles to inject.
+     */
+    injectStyles: function(styles) {
+
+      // See if there are new styles to inject.
+      var injectedStyles = $('style#injected-styles');
+      if (injectedStyles.length > 0) {
+        $.SeamlessBase.setStyle(injectedStyles[0], styles);
+      }
+      else {
+
+        // Inject the styles.
+        var css = $(document.createElement('style')).attr({
+          'type': 'text/css',
+          'id': 'injected-styles'
+        });
+        $.SeamlessBase.setStyle(css[0], styles);
+        $('head').append(css);
+      }
     }
   };
 })(window, document, jQuery);

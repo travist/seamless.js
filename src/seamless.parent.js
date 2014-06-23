@@ -242,7 +242,10 @@
         fallbackStyles = $(document.createElement('style')).attr({
           'id': 'seamless-fallback-styles',
           'type': 'text/css'
-        }).html(
+        });
+
+        // Set the styles for the fallback.
+        $.SeamlessBase.setStyle(fallbackStyles[0],
           '.seamless-fallback.seamless-styles {' + getStyles(options.fallbackStyles) + '}' +
           '.seamless-fallback em { padding: 5px; }' +
           '.seamless-fallback-link.seamless-styles {' + getStyles(options.fallbackLinkStyles) + '}' +
