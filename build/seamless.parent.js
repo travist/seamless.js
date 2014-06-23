@@ -492,9 +492,9 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     /**
      * Set the styles on an element.
      *
-     * @param object element
+     * @param {object} element
      *   The DOM Element you would like to set the styles.
-     * @param styles
+     * @param {array} styles
      *   The styles to add to the element.
      */
     setStyle: function(element, styles) {
@@ -503,15 +503,16 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
       if (styles.length > 0) {
 
         // Convert to the right format.
-        styles = (typeof styles == 'string') ? styles : styles.join('');
+        styles = (typeof styles == 'string') ? styles : styles.join(' ');
 
         // Keep them from escaping the styles tag.
         styles = $.SeamlessBase.filterText(styles);
 
         // Add the style to the element.
-        if(element.styleSheet) {
+        if (element.styleSheet) {
           element.styleSheet.cssText = styles;
-        } else {
+        }
+        else {
           $(element).html(styles);
         }
       }
@@ -520,7 +521,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     /**
      * Provide a cross broser method to inject styles.
      *
-     * @param array styles
+     * @param {array} styles
      *   An array of styles to inject.
      */
     injectStyles: function(styles) {
@@ -534,8 +535,8 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
 
         // Inject the styles.
         var css = $(document.createElement('style')).attr({
-          'type': 'text/css',
-          'id': 'injected-styles'
+          type: 'text/css',
+          id: 'injected-styles'
         });
         $.SeamlessBase.setStyle(css[0], styles);
         $('head').append(css);
