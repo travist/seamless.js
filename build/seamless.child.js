@@ -783,7 +783,6 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
 
           // Get the new height of the child.
           var newHeight = $(container).outerHeight(true);
-          newHeight = (newHeight > 100) ? newHeight : 100;
 
           // If the height are different.
           if (!sendingUpdate && (height !== newHeight)) {
