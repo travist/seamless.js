@@ -1049,8 +1049,8 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         iframe.connection.setActive(true);
       }
 
-      // If the height is greater than 0, then update.
-      if (data.height > 0) {
+      // If the height is 0 or greater, then update.
+      if (data.height >= 0) {
 
         // Set the iframe height.
         iframe.height(data.height).attr('height', data.height + 'px');
