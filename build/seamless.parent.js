@@ -758,6 +758,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
 
     // The default arguments.
     var defaults = {
+      showLoadingIndicator: true,
       loading: 'Loading ...',
       spinner: 'http://www.travistidwell.com/seamless.js/src/loader.gif',
       onConnect: null,
@@ -851,11 +852,17 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     });
 
     // Create the loading div.
-    var loading = $(document.createElement('div')).css({
-      background: 'url(' + options.spinner + ') no-repeat 10px 13px',
-      padding: '10px 10px 10px 60px',
-      width: '100%'
-    });
+    var loading = $(document.createElement('div'));
+
+    if (options.showLoadingIndicator) {
+      loading.css({
+        background: 'url(' + options.spinner + ') no-repeat 10px 13px',
+        padding: '10px 10px 10px 60px',
+        width: '100%'
+      });
+    } else {
+      loading.hide();
+    }
 
     // We are loading.
     var isLoading = true;
