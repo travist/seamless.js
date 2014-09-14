@@ -72,6 +72,10 @@ The following parameters are accepted.
     * _type_: string
     * _required_: false
     * _default_: 'http://www.travistidwell.com/seamless.js/src/loader.gif'
+  * __showLoadingIndicator__ - Show or not the loading indicator.
+    * _type_: bool
+    * _required_: false
+    * _default_: true
   * __onConnect__ - Called when a child iframe has finished connecting.
     * _type_: function
     * _required_: false
