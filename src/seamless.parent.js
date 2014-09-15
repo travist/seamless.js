@@ -121,6 +121,7 @@
 
     // The default arguments.
     var defaults = {
+      showLoadingIndicator: true,
       loading: 'Loading ...',
       spinner: 'http://www.travistidwell.com/seamless.js/src/loader.gif',
       onConnect: null,
@@ -213,21 +214,34 @@
       overflowY: 'hidden'
     });
 
-    // Create the loading div.
-    var loading = $(document.createElement('div')).css({
-      background: 'url(' + options.spinner + ') no-repeat 10px 13px',
-      padding: '10px 10px 10px 60px',
-      width: '100%'
-    });
+
+    // Loading div exists when showLoadingIndicator is true.
+    if (options.showLoadingIndicator) {
+      // Create the loading div.
+      var loading = $(document.createElement('div'));
+
+      loading.css({
+        background: 'url(' + options.spinner + ') no-repeat 10px 13px',
+        padding: '10px 10px 10px 60px',
+        width: '100%'
+      });
+
+      // Append the text.
+      loading.append(options.loading);
+
+      // Prepend the loading text.
+      iframe.before(loading);
+    }
 
     // We are loading.
     var isLoading = true;
 
-    // Append the text.
-    loading.append(options.loading);
-
-    // Prepend the loading text.
-    iframe.before(loading);
+    var loadingDone = function () {
+      isLoading = false;
+      if (loading !== undefined) {
+        loading.remove();
+      }
+    };
 
     // If they wish to have a fallback.
     if (options.fallback) {
@@ -343,8 +357,7 @@
       // If nothing happens after 30 seconds, then assume something went wrong.
       setTimeout(function() {
         if (isLoading) {
-          loading.remove();
-          isLoading = false;
+          loadingDone();
 
           // Create the fallback.
           setFallback(
@@ -407,8 +420,7 @@
       if (isLoading) {
 
         // Remove the loading indicator.
-        loading.remove();
-        isLoading = false;
+        loadingDone();
         iframe.connection.setActive(true);
       }
 
@@ -429,9 +441,8 @@
     iframe.seamless_error = function(data, event) {
 
       // Remove the loader and hide the iframe.
-      loading.remove();
+      loadingDone();
       iframe.hide();
-      isLoading = false;
 
       // Set the fallback text.
       setFallback(data.msg, data.linkText, data.afterText, true);
