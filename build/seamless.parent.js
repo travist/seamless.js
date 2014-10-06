@@ -570,6 +570,9 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     // Only send if the target is set.
     if (this.active && this.target) {
 
+      // Make sure the pm is at least always an object.
+      pm = pm || {};
+
       // Normalize the data.
       if (!pm.hasOwnProperty('data')) {
         pm = {data: pm};
