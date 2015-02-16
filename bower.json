@@ -1,0 +1,17 @@
+{
+  "name": "seamless.js",
+  "version": "0.0.3",
+  "homepage": "https://github.com/travist/seamless.js",
+  "authors": [
+    "Travis Tidwell <codertravist@gmail.com>"
+  ],
+  "description": "A jQuery library for working with seamless iframes.",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
