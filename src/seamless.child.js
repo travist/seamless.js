@@ -27,6 +27,9 @@
 
       /** Allow styles to be injected. */
       allowStyleInjection: false,
+      
+      /** Allow appended styles to be injected. */
+      allowAppendedStyleInjection: false,
 
       /** If this child page requires cookies. */
       requireCookies: false,
@@ -218,6 +221,11 @@
           if (options.allowStyleInjection) {
             $.SeamlessBase.injectStyles(data);
           }
+          
+          if (options.allowAppendedStyleInjection) {
+            $.SeamlessBase.injectAppendedStyles(data);
+          }
+          
           update();
         });
 

@@ -519,7 +519,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     },
 
     /**
-     * Provide a cross broser method to inject styles.
+     * Provide a cross browser method to inject styles.
      *
      * @param {array} styles
      *   An array of styles to inject.
@@ -541,6 +541,22 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         $.SeamlessBase.setStyle(css[0], styles);
         $('head').append(css);
       }
+    },
+    
+    /**
+     * Provide a cross browser method to inject and append new styles.
+     *
+     * @param {array} styles
+     *   An array of styles to inject.
+     */
+    injectAppendedStyles: function(styles) {
+      // Inject the styles.
+      var css = $(document.createElement('style')).attr({
+        type: 'text/css',
+        id: 'injected-styles'
+      });
+      $.SeamlessBase.setStyle(css[0], styles);
+      $('head').append(css);
     }
   };
 })(window, document, jQuery);
@@ -667,6 +683,9 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
 
       /** Allow styles to be injected. */
       allowStyleInjection: false,
+      
+      /** Allow appended styles to be injected. */
+      allowAppendedStyleInjection: false,
 
       /** If this child page requires cookies. */
       requireCookies: false,
@@ -858,6 +877,11 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
           if (options.allowStyleInjection) {
             $.SeamlessBase.injectStyles(data);
           }
+          
+          if (options.allowAppendedStyleInjection) {
+            $.SeamlessBase.injectAppendedStyles(data);
+          }
+          
           update();
         });
 
