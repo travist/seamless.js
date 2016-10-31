@@ -316,7 +316,5 @@ This is only necessary if the child iframe requires cookies, so for that reason,
 a default option.  To turn this on, add the following parameter to the child iframe.
 
 ```
-$.seamless({
-  requireCookies: true
-});
+$.seamless.options.requireCookies = true;
 ```
