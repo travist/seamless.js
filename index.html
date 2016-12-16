@@ -15,52 +15,55 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
-    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="build/seamless.parent.js"></script>
     <script type="text/javascript">
-      $(function() {
+      window.onload = function() {
 
         // Define the child pages.
-        var child1 = $('#childpage1').seamless();
-        var child2 = $('#childpage2').seamless();
+        var child1 = document.getElementById('childpage1');
+        var child2 = document.getElementById('childpage2');
+
+        // Declare these iframes as seamless.
+        window.seamless(child1);
+        window.seamless(child2);
 
         /**
          * Send text to the child1 iframe.
          */
-        $('#sendtext').click(function(event) {
+        window.sendToChild = function(event) {
           event.preventDefault();
           child1.send({
             type: 'setContent',
-            header: $('#sendtextcontent').val()
+            header: document.getElementById('sendtextcontent').value
           });
-        });
+        };
 
         /**
          * Add an image to the child2 iframe.
          */
-        $('#addimage').click(function(event) {
+        window.addImage = function(event) {
           event.preventDefault();
           child2.send({
             type: 'setContent',
             image: 'img/seamless.jpg'
           });
-        });
+        };
 
         /**
          * Inject styles.
          */
-        $('#injectstyles').click(function(event) {
+        window.injectStyles = function(event) {
           event.preventDefault();
           child2.send({
             type: 'seamless_styles',
-            data: $('#childstyles').val()
+            data: [document.getElementById('childstyles').value]
           });
-        });
+        };
 
         /**
          * When they click the swap button.
          */
-        $('#swap').click(function(event) {
+        window.swapContent = function(event) {
           event.preventDefault();
 
           // Get the child1 content.
@@ -88,20 +91,15 @@
               });
             }
           });
-        });
-      });
+        };
+      };
     </script>
-    <style type="text/css">
-      div.iframe-example iframe {
-        border: dashed 5px #ddd !important;
-      }
-    </style>
   </head>
   <body>
     <div class="row panel">
       <h2 class="subheader">Beautiful, seamless iframes with seamless.js</h2>
       <div class="large-8 columns">
-        <p>A <strong>seamless</strong> iframe makes it so that visitors are unable to distinguish between content within the iframe and content beside the iframe. <strong>Seamless.js</strong> is a jQuery library that makes working with iframes easy by doing all the <strong>seamless</strong> stuff for you automatically.</p>
+        <p>A <strong>seamless</strong> iframe makes it so that visitors are unable to distinguish between content within the iframe and content beside the iframe. <strong>Seamless.js</strong> is a JavaScript library that makes working with iframes easy by doing all the <strong>seamless</strong> stuff for you automatically.</p>
         <p>Stuff like...</p>
         <p><ul>
           <li>Automatically adds 'seamless' attributes to an iframe.</li>
@@ -140,19 +138,19 @@
             <input id="sendtextcontent" type="text" placeholder="Enter text to send to Child Page 1.">
           </div>
           <div class="small-12">
-            <a href="#" id="sendtext" class="button postfix">Send to Child Page 1</a>
+            <a href="#" id="sendtext" onclick="sendToChild(event)" class="button postfix">Send to Child Page 1</a>
           </div>
         </div>
         <div class="large-5 columns">
           <div class="row">
-            <a href="#" id="addimage" class="large-8 button expand">Add an image to Child Page 2</a>
+            <a href="#" id="addimage" onclick="addImage(event)" class="large-8 button expand">Add an image to Child Page 2</a>
           </div>
           <div class="row">
             <div class="small-12">
               <input id="childstyles" type="text" value="div.content { background-color: #6e6; }" placeholder="Enter a style to inject in Child Page 2.">
             </div>
             <div class="small-12">
-              <a href="#" id="injectstyles" class="button postfix">Inject Styles in Child Page 2</a>
+              <a href="#" id="injectstyles" onclick="injectStyles(event)" class="button postfix">Inject Styles in Child Page 2</a>
             </div>
           </div>
         </div>
@@ -163,7 +161,7 @@
       </div>
       <div class="large-2 columns" style="margin-top: 40px;">
         <h5>Swap Content</h5>
-        <a href="#" style="font-size: 20px;" id="swap" class="button large-12 columns">&harr;</a>
+        <a href="#" style="font-size: 20px;" id="swap" onclick="swapContent(event)" class="button large-12 columns">&harr;</a>
       </div>
       <div class="large-5 columns">
         <h4>Child Page 2</h4>

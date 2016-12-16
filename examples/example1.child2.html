@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seamless.js | Beautiful, seamless iframes.</title>
   <link rel="stylesheet" href="../css/foundation.css" />
-  <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="../build/seamless.child.js"></script>
   <script type="text/javascript">
-    var connection = $.seamless.connect({
+    var connection = window.seamless.connect({
       url: 'index.html',
       container: 'div.content'
     });

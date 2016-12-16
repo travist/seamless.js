@@ -1,0 +1,27 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form.io embed code.</title>
+</head>
+<body>
+<script type="text/javascript">
+  (function a(d, w) {
+    var h = d.getElementsByTagName('head')[0];
+    var s = d.createElement('script');
+    s.type = 'text/javascript';
+    s.src = 'https://portal.form.io/lib/seamless/seamless.parent.min.js';
+    s.onload = function b() {
+      var f = d.getElementById('formio-form');
+      if (!f || (typeof w.seamless === "undefined")) {
+        return setTimeout(b, 100);
+      }
+      w.seamless(f, {fallback:false}).receive(function(d, e) {});
+    };
+    h.appendChild(s);
+  })(document, window);
+</script>
+<iframe id="formio-form" style="width:100%;border:none;" height="600px" src="https://form.io/view/#/examples/example?iframe=1&header=0"></iframe>
+</body>
+</html>

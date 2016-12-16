@@ -1,4 +1,5 @@
-(function(window, document, $, undefined) {
+(function(window) {
+  'use strict';
   /**
    * Create a seamless connection between parent and child frames.
    *
@@ -6,7 +7,7 @@
    * @param url
    * @constructor
    */
-  $.SeamlessConnection = function(target, url) {
+  window.SeamlessConnection = function(target, url) {
     this.id = 0;
     this.target = target;
     this.url = url;
@@ -19,7 +20,7 @@
    *
    * @param pm
    */
-  $.SeamlessConnection.prototype.send = function(pm) {
+  window.SeamlessConnection.prototype.send = function(pm) {
 
     // Only send if the target is set.
     if (this.active && this.target) {
@@ -38,7 +39,7 @@
       pm.type = pm.type || 'seamless_data';
       pm.data = pm.data || {};
       pm.data.__id = this.id;
-      $.pm(pm);
+      window.pm(pm);
     }
     else {
 
@@ -50,7 +51,7 @@
   /**
    * Receive a message from a connected frame.
    */
-  $.SeamlessConnection.prototype.receive = function(type, callback) {
+  window.SeamlessConnection.prototype.receive = function(type, callback) {
     if (typeof type === 'function') {
       callback = type;
       type = 'seamless_data';
@@ -60,7 +61,7 @@
     var _self = this;
 
     // Listen for events.
-    $.pm.bind(type, function(data, event) {
+    window.pm.bind(type, function(data, event) {
 
       // Only handle data if the connection id's match.
       if (data.__id && (data.__id === _self.id)) {
@@ -79,7 +80,7 @@
    *
    * @param active
    */
-  $.SeamlessConnection.prototype.setActive = function(active) {
+  window.SeamlessConnection.prototype.setActive = function(active) {
     this.active = active;
 
     // Empty the send queue if we have one.
@@ -91,4 +92,4 @@
       this.queue.length = 0;
     }
   };
-})(window, document, jQuery);
+})(window);

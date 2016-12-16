@@ -436,9 +436,71 @@ var NO_JQUERY = {};
  * http://www.JSON.org/json2.js
  **/
 if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){return n<10?"0"+n:n}if(typeof Date.prototype.toJSON!=="function"){Date.prototype.toJSON=function(key){return this.getUTCFullYear()+"-"+f(this.getUTCMonth()+1)+"-"+f(this.getUTCDate())+"T"+f(this.getUTCHours())+":"+f(this.getUTCMinutes())+":"+f(this.getUTCSeconds())+"Z"};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(key){return this.valueOf()}}var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={"\b":"\\b","\t":"\\t","\n":"\\n","\f":"\\f","\r":"\\r",'"':'\\"',"\\":"\\\\"},rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?'"'+string.replace(escapable,function(a){var c=meta[a];return typeof c==="string"?c:"\\u"+("0000"+a.charCodeAt(0).toString(16)).slice(-4)})+'"':'"'+string+'"'}function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&&typeof value==="object"&&typeof value.toJSON==="function"){value=value.toJSON(key)}if(typeof rep==="function"){value=rep.call(holder,key,value)}switch(typeof value){case"string":return quote(value);case"number":return isFinite(value)?String(value):"null";case"boolean":case"null":return String(value);case"object":if(!value){return"null"}gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==="[object Array]"){length=value.length;for(i=0;i<length;i+=1){partial[i]=str(i,value)||"null"}v=partial.length===0?"[]":gap?"[\n"+gap+partial.join(",\n"+gap)+"\n"+mind+"]":"["+partial.join(",")+"]";gap=mind;return v}if(rep&&typeof rep==="object"){length=rep.length;for(i=0;i<length;i+=1){k=rep[i];if(typeof k==="string"){v=str(k,value);if(v){partial.push(quote(k)+(gap?": ":":")+v)}}}}else{for(k in value){if(Object.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?": ":":")+v)}}}}v=partial.length===0?"{}":gap?"{\n"+gap+partial.join(",\n"+gap)+"\n"+mind+"}":"{"+partial.join(",")+"}";gap=mind;return v}}if(typeof JSON.stringify!=="function"){JSON.stringify=function(value,replacer,space){var i;gap="";indent="";if(typeof space==="number"){for(i=0;i<space;i+=1){indent+=" "}}else{if(typeof space==="string"){indent=space}}rep=replacer;if(replacer&&typeof replacer!=="function"&&(typeof replacer!=="object"||typeof replacer.length!=="number")){throw new Error("JSON.stringify")}return str("",{"":value})}}if(typeof JSON.parse!=="function"){JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==="object"){for(k in value){if(Object.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v}else{delete value[k]}}}}return reviver.call(holder,key,value)}cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return"\\u"+("0000"+a.charCodeAt(0).toString(16)).slice(-4)})}if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,"@").replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,"]").replace(/(?:^|:|,)(?:\s*\[)+/g,""))){j=eval("("+text+")");return typeof reviver==="function"?walk({"":j},""):j}throw new SyntaxError("JSON.parse")}}}());
-(function(window, document, $, undefined) {
+
+(function(window, document) {
+  'use strict';
   // Base seamless functionality between parent and child.
-  $.SeamlessBase = {
+  window.SeamlessBase = {
+    getElement: function(selector) {
+      var selectorType = 'querySelectorAll';
+      if (selector.indexOf('#') === 0) {
+        selectorType = 'getElementById';
+        selector = selector.substr(1, selector.length);
+      }
+      var elements = document[selectorType](selector);
+      if (!elements) {
+        return elements;
+      }
+      return ((elements.constructor === NodeList) && elements.length) ? elements[0] : elements;
+    },
+
+    /**
+     * Calculate the element height.
+     * http://stackoverflow.com/questions/10787782/full-height-of-a-html-element-div-including-border-padding-and-margin
+     *
+     * @param element
+     * @returns {number}
+     */
+    elementHeight: function(element) {
+      var elmHeight = 0;
+      var elmMargin = 0;
+      if(document.all) {// IE
+        elmHeight = element.currentStyle.height;
+        elmMargin = parseInt(element.currentStyle.marginTop, 10) + parseInt(element.currentStyle.marginBottom, 10);
+      } else {// Mozilla
+        elmHeight = parseInt(document.defaultView.getComputedStyle(element, '').getPropertyValue('height'), 10);
+        elmMargin = parseInt(document.defaultView.getComputedStyle(element, '').getPropertyValue('margin-top'), 10) + parseInt(document.defaultView.getComputedStyle(element, '').getPropertyValue('margin-bottom'), 10);
+      }
+      return (elmHeight + elmMargin);
+    },
+
+    hasClass: function(el, className) {
+      if (el.classList) {
+        return el.classList.contains(className);
+      }
+      else {
+        return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+      }
+    },
+
+    addClass: function(el, className) {
+      if (el.classList) {
+        el.classList.add(className);
+      }
+      else if (!this.hasClass(el, className)) {
+        el.className += " " + className;
+      }
+    },
+
+    removeClass: function(el, className) {
+      if (el.classList) {
+        el.classList.remove(className);
+      }
+      else if (this.hasClass(el, className)) {
+        var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+        el.className=el.className.replace(reg, ' ');
+      }
+    },
 
     /**
      * Returns the value of a query parameter.
@@ -506,14 +568,14 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         styles = (typeof styles == 'string') ? styles : styles.join(' ');
 
         // Keep them from escaping the styles tag.
-        styles = $.SeamlessBase.filterText(styles);
+        styles = window.SeamlessBase.filterText(styles);
 
         // Add the style to the element.
         if (element.styleSheet) {
           element.styleSheet.cssText = styles;
         }
         else {
-          $(element).html(styles);
+          element.innerHTML = styles;
         }
       }
     },
@@ -527,19 +589,21 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     injectStyles: function(styles) {
 
       // See if there are new styles to inject.
-      var injectedStyles = $('style#injected-styles');
-      if (injectedStyles.length > 0) {
-        $.SeamlessBase.setStyle(injectedStyles[0], styles);
+      var injectedStyles = this.getElement('style#injected-styles');
+      if (injectedStyles.length) {
+        window.SeamlessBase.setStyle(injectedStyles[0], styles);
       }
       else {
 
         // Inject the styles.
-        var css = $(document.createElement('style')).attr({
-          type: 'text/css',
-          id: 'injected-styles'
-        });
-        $.SeamlessBase.setStyle(css[0], styles);
-        $('head').append(css);
+        var css = document.createElement('style');
+        css.setAttribute('type', 'text/css');
+        css.setAttribute('id', 'injected-styles');
+        window.SeamlessBase.setStyle(css, styles);
+        var head = document.head || document.getElementsByTagName('head')[0];
+        if (head) {
+          head.appendChild(css);
+        }
       }
     },
     
@@ -550,17 +614,22 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
      *   An array of styles to inject.
      */
     injectAppendedStyles: function(styles) {
-      // Inject the styles.
-      var css = $(document.createElement('style')).attr({
-        type: 'text/css',
-        id: 'injected-styles'
-      });
-      $.SeamlessBase.setStyle(css[0], styles);
-      $('head').append(css);
+      var css = styles.join(';');
+      var head = document.head || document.getElementsByTagName('head')[0];
+      var style = document.createElement('style');
+      style.type = 'text/css';
+      if (style.styleSheet){
+        style.styleSheet.cssText = css;
+      } else {
+        style.appendChild(document.createTextNode(css));
+      }
+      head.appendChild(style);
     }
   };
-})(window, document, jQuery);
-(function(window, document, $, undefined) {
+})(window, document);
+
+(function(window) {
+  'use strict';
   /**
    * Create a seamless connection between parent and child frames.
    *
@@ -568,7 +637,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
    * @param url
    * @constructor
    */
-  $.SeamlessConnection = function(target, url) {
+  window.SeamlessConnection = function(target, url) {
     this.id = 0;
     this.target = target;
     this.url = url;
@@ -581,7 +650,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
    *
    * @param pm
    */
-  $.SeamlessConnection.prototype.send = function(pm) {
+  window.SeamlessConnection.prototype.send = function(pm) {
 
     // Only send if the target is set.
     if (this.active && this.target) {
@@ -600,7 +669,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
       pm.type = pm.type || 'seamless_data';
       pm.data = pm.data || {};
       pm.data.__id = this.id;
-      $.pm(pm);
+      window.pm(pm);
     }
     else {
 
@@ -612,7 +681,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
   /**
    * Receive a message from a connected frame.
    */
-  $.SeamlessConnection.prototype.receive = function(type, callback) {
+  window.SeamlessConnection.prototype.receive = function(type, callback) {
     if (typeof type === 'function') {
       callback = type;
       type = 'seamless_data';
@@ -622,7 +691,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     var _self = this;
 
     // Listen for events.
-    $.pm.bind(type, function(data, event) {
+    window.pm.bind(type, function(data, event) {
 
       // Only handle data if the connection id's match.
       if (data.__id && (data.__id === _self.id)) {
@@ -641,7 +710,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
    *
    * @param active
    */
-  $.SeamlessConnection.prototype.setActive = function(active) {
+  window.SeamlessConnection.prototype.setActive = function(active) {
     this.active = active;
 
     // Empty the send queue if we have one.
@@ -653,17 +722,18 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
       this.queue.length = 0;
     }
   };
-})(window, document, jQuery);
-(function(window, document, $, undefined) {
+})(window);
 
-  // Make sure we have the $.pm module loaded.
-  if (!$.hasOwnProperty('pm')) {
-    console.log('You must install the jQuery.pm module to use seamless.js.');
+(function(window, document, $, undefined) {
+  'use strict';
+  // Make sure we have the window.pm module loaded.
+  if (!window.hasOwnProperty('pm')) {
+    console.log('You must install the postmessage.js module to use seamless.js.');
     return;
   }
 
   // If any iframe page sends this message, then reload the page.
-  $.pm.bind('seamless_noiframe', function(data) {
+  window.pm.bind('seamless_noiframe', function(data) {
     // Remove the 'noifame' query parameters.
     data.href = data.href.replace(/noiframe\=[^&?#]+/, '');
     window.location.replace(data.href);
@@ -707,7 +777,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
   };
 
   // Call when each child is ready.
-  $.pm.bind('seamless_ready', function(data, event) {
+  window.pm.bind('seamless_ready', function(data, event) {
 
     // Only do this if we are not already connecting.
     if (!connecting) {
@@ -732,7 +802,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
   });
 
   // Handle the child update message.
-  $.pm.bind('seamless_update', function(data, event) {
+  window.pm.bind('seamless_update', function(data, event) {
 
     // Iterate through all of our iframes.
     for (var i in seamlessFrames) {
@@ -757,7 +827,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
   });
 
   // If an error occurs.
-  $.pm.bind('seamless_error', function(data, event) {
+  window.pm.bind('seamless_error', function(data, event) {
 
     // Iterate through all of our iframes.
     for (var i in seamlessFrames) {
@@ -773,7 +843,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
   /**
    * Create the seamless.js plugin.
    */
-  $.fn.seamless = function(options) {
+  var seamless = function(options) {
 
     // The default arguments.
     var defaults = {
@@ -829,7 +899,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     }
 
     // Only work with the first iframe object.
-    var iframe = $(this).eq(0);
+    var iframe = this.length ? this[0] : this;
 
     // Set the seamless_options in the iframe.
     iframe.seamless_options = options;
@@ -838,13 +908,13 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     seamlessFrames.push(iframe);
 
     // Get the name of the iframe.
-    var id = iframe.attr('name') || iframe.attr('id');
+    var id = iframe.getAttribute('name') || iframe.getAttribute('id');
 
     // Get the iframe source.
-    var src = iframe.attr('src');
+    var src = iframe.getAttribute('src');
 
     // The connection object.
-    iframe.connection = new $.SeamlessConnection(iframe[0].contentWindow, src);
+    iframe.connection = new window.SeamlessConnection(iframe.contentWindow, src);
 
     // Assign the send and receive functions to the iframe.
     iframe.send = function(pm) {
@@ -855,7 +925,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     };
 
     // Add the necessary attributes.
-    iframe.attr({
+    var attributes = {
       'scrolling': 'no',
       'seamless': 'seamless',
       'width': '100%',
@@ -864,29 +934,24 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
       'marginwidth': '0',
       'frameborder': '0',
       'horizontalscrolling': 'no',
-      'verticalscrolling': 'no'
-    }).css({
-      border: 'none',
-      overflowY: 'hidden'
-    });
-
+      'verticalscrolling': 'no',
+      'style': 'border: none; overflow-y: hidden;'
+    };
+    for (var name in attributes) {
+      iframe.setAttribute(name, attributes[name]);
+    }
 
     // Loading div exists when showLoadingIndicator is true.
     if (options.showLoadingIndicator) {
       // Create the loading div.
-      var loading = $(document.createElement('div'));
-
-      loading.css({
-        background: 'url(' + options.spinner + ') no-repeat 10px 13px',
-        padding: '10px 10px 10px 60px',
-        width: '100%'
-      });
-
-      // Append the text.
-      loading.append(options.loading);
-
-      // Prepend the loading text.
-      iframe.before(loading);
+      var loading = document.createElement('div');
+      var loadingStyle = 'background: url(' + options.spinner + ') no-repeat 10px 13px;';
+      loadingStyle += 'padding: 10px 10px 10px 60px;';
+      loadingStyle += 'width: 100%;';
+      loading.setAttribute('style', loadingStyle);
+      var loadingText = document.createTextNode(options.loading);
+      loading.appendChild(loadingText);
+      iframe.parentNode.insertBefore(loading, iframe);
     }
 
     // We are loading.
@@ -895,7 +960,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     var loadingDone = function () {
       isLoading = false;
       if (loading !== undefined) {
-        loading.remove();
+        loading.parentNode.removeChild(loading);
       }
     };
 
@@ -908,24 +973,23 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         src += options.fallbackParams;
       }
 
-      var fallbackStyles = $('#seamless-fallback-styles');
-      if (!fallbackStyles.length) {
+      var fallbackStyles = window.SeamlessBase.getElement('#seamless-fallback-styles');
+      if (!fallbackStyles) {
 
         // Get styles from a setting.
         var getStyles = function(stylesArray) {
 
           // Join the array, and strip out markup.
-          return $.SeamlessBase.filterText(stylesArray.join(';'));
+          return window.SeamlessBase.filterText(stylesArray.join(';'));
         };
 
         // Create the fallback styles.
-        fallbackStyles = $(document.createElement('style')).attr({
-          'id': 'seamless-fallback-styles',
-          'type': 'text/css'
-        });
+        fallbackStyles = document.createElement('style');
+        fallbackStyles.setAttribute('id', 'seamless-fallback-styles');
+        fallbackStyles.setAttribute('type', 'text/css');
 
         // Set the styles for the fallback.
-        $.SeamlessBase.setStyle(fallbackStyles[0],
+        window.SeamlessBase.setStyle(fallbackStyles,
           '.seamless-fallback.seamless-styles {' + getStyles(options.fallbackStyles) + '}' +
           '.seamless-fallback em { padding: 5px; }' +
           '.seamless-fallback-link.seamless-styles {' + getStyles(options.fallbackLinkStyles) + '}' +
@@ -933,7 +997,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         );
 
         // Add the styles before the iframe.
-        iframe.before(fallbackStyles);
+        iframe.parentNode.insertBefore(fallbackStyles, iframe);
       }
 
       // The arguments to pass to the onclick event.
@@ -944,22 +1008,20 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
       ];
 
       // Create the fallback link.
-      var fallbackLink = $(document.createElement('a')).attr({
-        'class': 'seamless-fallback-link',
-        'href': '#',
-        'onclick': 'seamlessOpenFallback(' + onClickArgs.join(',') + ', event)'
-      });
+      var fallbackLink = document.createElement('a');
+      fallbackLink.setAttribute('class', 'seamless-fallback-link');
+      fallbackLink.setAttribute('href', '#');
+      fallbackLink.setAttribute('onclick', 'seamlessOpenFallback(' + onClickArgs.join(',') + ', event)');
 
       // Create the fallback markup.
-      var fallback = $(document.createElement('div')).attr({
-        'class': 'seamless-fallback'
-      });
+      var fallback = document.createElement('div');
+      fallback.setAttribute('class', 'seamless-fallback');
 
       // Add the emphasis element for the text.
-      fallback.append($(document.createElement('em')));
+      fallback.appendChild(document.createElement('em'));
 
       // Set the iframe.
-      iframe.after(fallback);
+      iframe.parentNode.insertBefore(fallback, iframe.nextSibling);
 
       /**
        * Set the fallback message for the iframe.
@@ -969,19 +1031,23 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
 
         // If they wish to show the styles.
         if (showStyles) {
-          fallback.addClass('seamless-styles');
-          fallbackLink.addClass('seamless-styles');
+          window.SeamlessBase.addClass(fallback, 'seamless-styles');
+          window.SeamlessBase.addClass(fallbackLink, 'seamless-styles');
         }
         else {
-          fallback.removeClass('seamless-styles');
-          fallbackLink.removeClass('seamless-styles');
+          window.SeamlessBase.removeClass(fallback, 'seamless-styles');
+          window.SeamlessBase.removeClass(fallbackLink, 'seamless-styles');
         }
 
-        // Set the text for the fallback.
-        fallback.find('em')
-          .text($.SeamlessBase.filterText(msg) + ' ')
-          .append(fallbackLink.text($.SeamlessBase.filterText(linkText)))
-          .append($.SeamlessBase.filterText(afterText));
+        var fallbackEm = fallback.getElementsByTagName('em')[0];
+        if (fallbackEm) {
+          fallbackEm.innerHTML = window.SeamlessBase.filterText(msg) + ' ';
+          fallbackLink.innerHTML = window.SeamlessBase.filterText(linkText);
+          fallbackEm.appendChild(fallbackLink);
+          if (afterText) {
+            fallbackEm.appendChild(document.createTextNode(afterText));
+          }
+        }
       };
 
       // Set the default fallback.
@@ -996,8 +1062,8 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         );
       }
 
-      // Handle all errors with a fallback message.
-      $(window).error(function() {
+      // Handle all errors within a fallback message.
+      window.onerror = function() {
         var msg = 'An error has been detected on this page, ';
         msg += 'which may cause problems with the operation of this application.';
 
@@ -1008,7 +1074,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
           options.fallbackLinkAfter,
           true
         );
-      });
+      };
 
       // If nothing happens after 30 seconds, then assume something went wrong.
       setTimeout(function() {
@@ -1048,7 +1114,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
       }
 
       // Send the connection message to the child page.
-      $.pm({
+      window.pm({
         type: 'seamless_connect',
         target: iframe.connection.target,
         url: iframe.connection.url,
@@ -1061,7 +1127,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
       });
 
       // Trigger an event.
-      iframe.trigger('connected');
+      iframe.dispatchEvent(new CustomEvent("connected"));
     };
 
     /**
@@ -1082,9 +1148,9 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
 
       // If the height is 0 or greater, then update.
       if (data.height >= 0) {
-
         // Set the iframe height.
-        iframe.height(data.height).attr('height', data.height + 'px');
+        iframe.style.height = data.height + 'px';
+        iframe.setAttribute('height', data.height + 'px');
       }
 
       // Return the data.
@@ -1107,4 +1173,14 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     // Return the iframe.
     return iframe;
   };
-})(window, document, jQuery);
+
+  if ($ && $.fn) {
+    // Use for jQuery.
+    $.fn.seamless = seamless;
+  }
+  else {
+    window.seamless = function(element, options) {
+      return seamless.call(element, options);
+    };
+  }
+})(window, document, (typeof jQuery === 'undefined') ? {} : jQuery);

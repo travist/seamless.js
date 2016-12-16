@@ -5,40 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seamless.js | Beautiful, seamless iframes.</title>
   <link rel="stylesheet" href="css/foundation.css" />
-  <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="build/seamless.child.js"></script>
-  <script type="text/javascript">
-    var connection = $.seamless.connect({
-      url: 'index.html',
-      container: 'div.content',
-      allowStyleInjection: true
-    });
-
-    // Receive a message
-    connection.receive(function(data) {
-      switch(data.type) {
-        case 'setContent':
-          if (data.hasOwnProperty('header')) {
-            $('h1').text(data.header);
-          }
-          if (data.hasOwnProperty('image')) {
-            $('#image').attr('src', data.image);
-          }
-          break;
-        case 'getContent':
-          return {
-            header: $('h1').text(),
-            image: $('#image').attr('src')
-          };
-          break;
-      }
-    });
-  </script>
+  <script src="child.js"></script>
 </head>
 <body>
-<div class="content">
+<div class="content" style="margin:10px;">
   <div class="row">
-    <div class="large-12 columns" style="margin:10px;">
+    <div class="large-12 columns">
       <h1></h1>
       <em>
         This is the Child Page 2.

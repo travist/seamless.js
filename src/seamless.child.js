@@ -1,15 +1,15 @@
-(function(window, document, $, undefined) {
-
-  // Make sure we have the $.pm module loaded.
-  if (!$.hasOwnProperty('pm')) {
-    console.log('You must install the jQuery.pm module to use seamless.js.');
+(function(window, document, $) {
+  'use strict';
+  // Make sure we have the postmessage.js module loaded.
+  if (!window.hasOwnProperty('pm')) {
+    console.log('You must install the postmessage.js module to use seamless.js.');
     return;
   }
 
   /**
    * Create the seamless.js class on the jQuery object.
    */
-  $.seamless = {
+  $.seamless = window.seamless = {
 
     /**
      * The options for the client seamless.js library.
@@ -67,7 +67,7 @@
       options = this.options;
 
       // The connection object.
-      var connection = new $.SeamlessConnection(
+      var connection = new window.SeamlessConnection(
         window.parent,
         options.url
       );
@@ -117,7 +117,7 @@
       }
 
       // See if this page should not be iframed.
-      var noiframe = $.SeamlessBase.getParam('noiframe').toString();
+      var noiframe = window.SeamlessBase.getParam('noiframe').toString();
       if (noiframe === '1' || noiframe.toLowerCase() === 'true') {
         connection.send({
           type: 'seamless_noiframe',
@@ -148,7 +148,7 @@
           }
 
           // Get the new height of the child.
-          var newHeight = $(container).outerHeight(true);
+          var newHeight = window.SeamlessBase.elementHeight(window.SeamlessBase.getElement(container));
 
           // If the height are different.
           if (!sendingUpdate && (height !== newHeight)) {
@@ -217,20 +217,20 @@
         };
 
         // Listen for inject styles command.
-        $.pm.bind('seamless_styles', function(data) {
+        window.pm.bind('seamless_styles', function(data) {
           if (options.allowStyleInjection) {
-            $.SeamlessBase.injectStyles(data);
+            window.SeamlessBase.injectStyles(data);
           }
           
           if (options.allowAppendedStyleInjection) {
-            $.SeamlessBase.injectAppendedStyles(data);
+            window.SeamlessBase.injectAppendedStyles(data);
           }
           
           update();
         });
 
         // Listen for the connect event.
-        $.pm.bind('seamless_connect', function(data, event) {
+        window.pm.bind('seamless_connect', function(data, event) {
 
           // Set the connection ID.
           connection.id = data.id;
@@ -241,14 +241,13 @@
           }
 
           // Add some styles to the body to support seamless styles.
-          $('html').attr({
-            'style': 'overflow:hidden;' + $('body').attr('html'),
-            'scroll': 'no'
-          });
+          var htmlStyle = document.body.getAttribute('style');
+          document.body.setAttribute('style', 'overflow:hidden;' + htmlStyle);
+          document.body.setAttribute('scroll', 'no');
 
           // Inject styles if they wish.
           if (options.allowStyleInjection) {
-            $.SeamlessBase.injectStyles(data.styles);
+            window.SeamlessBase.injectStyles(data.styles);
           }
 
           // Call the update.
@@ -266,4 +265,4 @@
       return connection;
     }
   };
-})(window, document, jQuery);
+})(window, document, (typeof jQuery === 'undefined') ? {} : jQuery);

@@ -1,6 +1,6 @@
 Beautiful, seamless iframes with seamless.js
 ---------------------------------------------
-A __seamless iframe__ makes it so that visitors are unable to distinguish between content within the iframe and content beside the iframe. __Seamless.js__ is a jQuery library that makes working with iframes easy by doing all the _seamless_ stuff for you automatically. Stuff like...
+A __seamless iframe__ makes it so that visitors are unable to distinguish between content within the iframe and content beside the iframe. __Seamless.js__ is a JavaScript library (with no dependencies) that makes working with iframes easy by doing all the _seamless_ stuff for you automatically. Stuff like...
 
   * Automatically adds 'seamless' attributes to an iframe.
   * Easy communication between parent page and iframe page.
@@ -44,11 +44,10 @@ You can now use the following code within the Parent Page to turn your iframes i
 
 ```
 <script type="text/javascript">
-  $(function() {
-
+  window.onload = function() {
     // Turns the iframe into a seamless iframe.
-    $('#myiframe').seamless();
-  });
+    window.seamless(document.getElementById('myiframe'));
+  };
 </script>
 
 <iframe id="myiframe" src="childpage.html"></iframe>
@@ -57,7 +56,7 @@ You can now use the following code within the Parent Page to turn your iframes i
 You can also pass in options to this jQuery library like so...
 
 ```
-$('#myiframe').seamless({
+window.seamless(document.getElementById('myiframe'), {
   loading: 'I am loading!!!!'
 });
 ```
@@ -158,7 +157,7 @@ Within the Child Page, you will need to now add the following code to connect th
 <script type="text/javascript">
 
   // Connect to the parent page.
-  $.seamless.connect({
+  window.seamless.connect({
     url: 'index.html'
   });
 </script>
@@ -167,7 +166,7 @@ Within the Child Page, you will need to now add the following code to connect th
 You can also pass in parameters to this like so...
 
 ```
-$.seamless.connect({
+window.seamless.connect({
   url: 'index.html',
   container: 'div.content'
 });
@@ -227,7 +226,7 @@ To communicate to the child page from the parent page, you simply need to store 
 can then use it to send and receive events to the child, like so.
 
 ```
-var child = $('#myiframe').seamless();
+var child = window.seamless(document.getElementById('myiframe'));
 
 // Send a message
 child.send({
@@ -246,7 +245,7 @@ child.receive(function(data, event) {
 Inversely, you can easily communicate to the parent page from the child page like so...
 
 ```
-var parent = $.seamless.connect({
+var parent = window.seamless.connect({
   url: 'index.html'
 });
 
@@ -272,7 +271,7 @@ the response.  The code below shows this best...
 
 #### Parent Page ####
 ```
-var child = $('#myiframe').seamless();
+var child = window.seamless(document.getElementById('myiframe'));
 
 child.send({
   data: {
@@ -288,7 +287,7 @@ child.send({
 
 #### Child Page ####
 ```
-var parent = $.seamless.connect({
+var parent = window.seamless.connect({
   url: 'index.html'
 });
 
@@ -305,6 +304,20 @@ parent.receive(function(data, event) {
 });
 ```
 
+### Using with jQuery ###
+You can also use this library with jQuery where you can call the ```seamless``` method on the
+iframe jQuery element like so.
+
+```
+$('#myiframe').seamless();
+```
+
+Also, within the child page, you can refer to the seamless class like so.
+
+```
+$.seamless
+```
+
 ### Child iFrame Cookie Problem ###
 Some browsers (Safari) have an issue where by default they do not allow cookies within the
 child iframe if it is a cross-origin domain within the child iframe.  This library solves this
@@ -316,5 +329,5 @@ This is only necessary if the child iframe requires cookies, so for that reason,
 a default option.  To turn this on, add the following parameter to the child iframe.
 
 ```
-$.seamless.options.requireCookies = true;
+window.seamless.options.requireCookies = true;
 ```

@@ -1,6 +1,67 @@
-(function(window, document, $, undefined) {
+(function(window, document) {
+  'use strict';
   // Base seamless functionality between parent and child.
-  $.SeamlessBase = {
+  window.SeamlessBase = {
+    getElement: function(selector) {
+      var selectorType = 'querySelectorAll';
+      if (selector.indexOf('#') === 0) {
+        selectorType = 'getElementById';
+        selector = selector.substr(1, selector.length);
+      }
+      var elements = document[selectorType](selector);
+      if (!elements) {
+        return elements;
+      }
+      return ((elements.constructor === NodeList) && elements.length) ? elements[0] : elements;
+    },
+
+    /**
+     * Calculate the element height.
+     * http://stackoverflow.com/questions/10787782/full-height-of-a-html-element-div-including-border-padding-and-margin
+     *
+     * @param element
+     * @returns {number}
+     */
+    elementHeight: function(element) {
+      var elmHeight = 0;
+      var elmMargin = 0;
+      if(document.all) {// IE
+        elmHeight = element.currentStyle.height;
+        elmMargin = parseInt(element.currentStyle.marginTop, 10) + parseInt(element.currentStyle.marginBottom, 10);
+      } else {// Mozilla
+        elmHeight = parseInt(document.defaultView.getComputedStyle(element, '').getPropertyValue('height'), 10);
+        elmMargin = parseInt(document.defaultView.getComputedStyle(element, '').getPropertyValue('margin-top'), 10) + parseInt(document.defaultView.getComputedStyle(element, '').getPropertyValue('margin-bottom'), 10);
+      }
+      return (elmHeight + elmMargin);
+    },
+
+    hasClass: function(el, className) {
+      if (el.classList) {
+        return el.classList.contains(className);
+      }
+      else {
+        return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+      }
+    },
+
+    addClass: function(el, className) {
+      if (el.classList) {
+        el.classList.add(className);
+      }
+      else if (!this.hasClass(el, className)) {
+        el.className += " " + className;
+      }
+    },
+
+    removeClass: function(el, className) {
+      if (el.classList) {
+        el.classList.remove(className);
+      }
+      else if (this.hasClass(el, className)) {
+        var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+        el.className=el.className.replace(reg, ' ');
+      }
+    },
 
     /**
      * Returns the value of a query parameter.
@@ -68,14 +129,14 @@
         styles = (typeof styles == 'string') ? styles : styles.join(' ');
 
         // Keep them from escaping the styles tag.
-        styles = $.SeamlessBase.filterText(styles);
+        styles = window.SeamlessBase.filterText(styles);
 
         // Add the style to the element.
         if (element.styleSheet) {
           element.styleSheet.cssText = styles;
         }
         else {
-          $(element).html(styles);
+          element.innerHTML = styles;
         }
       }
     },
@@ -89,19 +150,21 @@
     injectStyles: function(styles) {
 
       // See if there are new styles to inject.
-      var injectedStyles = $('style#injected-styles');
-      if (injectedStyles.length > 0) {
-        $.SeamlessBase.setStyle(injectedStyles[0], styles);
+      var injectedStyles = this.getElement('style#injected-styles');
+      if (injectedStyles.length) {
+        window.SeamlessBase.setStyle(injectedStyles[0], styles);
       }
       else {
 
         // Inject the styles.
-        var css = $(document.createElement('style')).attr({
-          type: 'text/css',
-          id: 'injected-styles'
-        });
-        $.SeamlessBase.setStyle(css[0], styles);
-        $('head').append(css);
+        var css = document.createElement('style');
+        css.setAttribute('type', 'text/css');
+        css.setAttribute('id', 'injected-styles');
+        window.SeamlessBase.setStyle(css, styles);
+        var head = document.head || document.getElementsByTagName('head')[0];
+        if (head) {
+          head.appendChild(css);
+        }
       }
     },
     
@@ -112,13 +175,16 @@
      *   An array of styles to inject.
      */
     injectAppendedStyles: function(styles) {
-      // Inject the styles.
-      var css = $(document.createElement('style')).attr({
-        type: 'text/css',
-        id: 'injected-styles'
-      });
-      $.SeamlessBase.setStyle(css[0], styles);
-      $('head').append(css);
+      var css = styles.join(';');
+      var head = document.head || document.getElementsByTagName('head')[0];
+      var style = document.createElement('style');
+      style.type = 'text/css';
+      if (style.styleSheet){
+        style.styleSheet.cssText = css;
+      } else {
+        style.appendChild(document.createTextNode(css));
+      }
+      head.appendChild(style);
     }
   };
-})(window, document, jQuery);
+})(window, document);

@@ -1,6 +1,67 @@
-(function(window, document, $, undefined) {
+(function(window, document) {
+  'use strict';
   // Base seamless functionality between parent and child.
-  $.SeamlessBase = {
+  window.SeamlessBase = {
+    getElement: function(selector) {
+      var selectorType = 'querySelectorAll';
+      if (selector.indexOf('#') === 0) {
+        selectorType = 'getElementById';
+        selector = selector.substr(1, selector.length);
+      }
+      var elements = document[selectorType](selector);
+      if (!elements) {
+        return elements;
+      }
+      return ((elements.constructor === NodeList) && elements.length) ? elements[0] : elements;
+    },
+
+    /**
+     * Calculate the element height.
+     * http://stackoverflow.com/questions/10787782/full-height-of-a-html-element-div-including-border-padding-and-margin
+     *
+     * @param element
+     * @returns {number}
+     */
+    elementHeight: function(element) {
+      var elmHeight = 0;
+      var elmMargin = 0;
+      if(document.all) {// IE
+        elmHeight = element.currentStyle.height;
+        elmMargin = parseInt(element.currentStyle.marginTop, 10) + parseInt(element.currentStyle.marginBottom, 10);
+      } else {// Mozilla
+        elmHeight = parseInt(document.defaultView.getComputedStyle(element, '').getPropertyValue('height'), 10);
+        elmMargin = parseInt(document.defaultView.getComputedStyle(element, '').getPropertyValue('margin-top'), 10) + parseInt(document.defaultView.getComputedStyle(element, '').getPropertyValue('margin-bottom'), 10);
+      }
+      return (elmHeight + elmMargin);
+    },
+
+    hasClass: function(el, className) {
+      if (el.classList) {
+        return el.classList.contains(className);
+      }
+      else {
+        return !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+      }
+    },
+
+    addClass: function(el, className) {
+      if (el.classList) {
+        el.classList.add(className);
+      }
+      else if (!this.hasClass(el, className)) {
+        el.className += " " + className;
+      }
+    },
+
+    removeClass: function(el, className) {
+      if (el.classList) {
+        el.classList.remove(className);
+      }
+      else if (this.hasClass(el, className)) {
+        var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+        el.className=el.className.replace(reg, ' ');
+      }
+    },
 
     /**
      * Returns the value of a query parameter.
@@ -68,14 +129,14 @@
         styles = (typeof styles == 'string') ? styles : styles.join(' ');
 
         // Keep them from escaping the styles tag.
-        styles = $.SeamlessBase.filterText(styles);
+        styles = window.SeamlessBase.filterText(styles);
 
         // Add the style to the element.
         if (element.styleSheet) {
           element.styleSheet.cssText = styles;
         }
         else {
-          $(element).html(styles);
+          element.innerHTML = styles;
         }
       }
     },
@@ -89,19 +150,21 @@
     injectStyles: function(styles) {
 
       // See if there are new styles to inject.
-      var injectedStyles = $('style#injected-styles');
-      if (injectedStyles.length > 0) {
-        $.SeamlessBase.setStyle(injectedStyles[0], styles);
+      var injectedStyles = this.getElement('style#injected-styles');
+      if (injectedStyles.length) {
+        window.SeamlessBase.setStyle(injectedStyles[0], styles);
       }
       else {
 
         // Inject the styles.
-        var css = $(document.createElement('style')).attr({
-          type: 'text/css',
-          id: 'injected-styles'
-        });
-        $.SeamlessBase.setStyle(css[0], styles);
-        $('head').append(css);
+        var css = document.createElement('style');
+        css.setAttribute('type', 'text/css');
+        css.setAttribute('id', 'injected-styles');
+        window.SeamlessBase.setStyle(css, styles);
+        var head = document.head || document.getElementsByTagName('head')[0];
+        if (head) {
+          head.appendChild(css);
+        }
       }
     },
     
@@ -112,17 +175,22 @@
      *   An array of styles to inject.
      */
     injectAppendedStyles: function(styles) {
-      // Inject the styles.
-      var css = $(document.createElement('style')).attr({
-        type: 'text/css',
-        id: 'injected-styles'
-      });
-      $.SeamlessBase.setStyle(css[0], styles);
-      $('head').append(css);
+      var css = styles.join(';');
+      var head = document.head || document.getElementsByTagName('head')[0];
+      var style = document.createElement('style');
+      style.type = 'text/css';
+      if (style.styleSheet){
+        style.styleSheet.cssText = css;
+      } else {
+        style.appendChild(document.createTextNode(css));
+      }
+      head.appendChild(style);
     }
   };
-})(window, document, jQuery);
-(function(window, document, $, undefined) {
+})(window, document);
+
+(function(window) {
+  'use strict';
   /**
    * Create a seamless connection between parent and child frames.
    *
@@ -130,7 +198,7 @@
    * @param url
    * @constructor
    */
-  $.SeamlessConnection = function(target, url) {
+  window.SeamlessConnection = function(target, url) {
     this.id = 0;
     this.target = target;
     this.url = url;
@@ -143,7 +211,7 @@
    *
    * @param pm
    */
-  $.SeamlessConnection.prototype.send = function(pm) {
+  window.SeamlessConnection.prototype.send = function(pm) {
 
     // Only send if the target is set.
     if (this.active && this.target) {
@@ -162,7 +230,7 @@
       pm.type = pm.type || 'seamless_data';
       pm.data = pm.data || {};
       pm.data.__id = this.id;
-      $.pm(pm);
+      window.pm(pm);
     }
     else {
 
@@ -174,7 +242,7 @@
   /**
    * Receive a message from a connected frame.
    */
-  $.SeamlessConnection.prototype.receive = function(type, callback) {
+  window.SeamlessConnection.prototype.receive = function(type, callback) {
     if (typeof type === 'function') {
       callback = type;
       type = 'seamless_data';
@@ -184,7 +252,7 @@
     var _self = this;
 
     // Listen for events.
-    $.pm.bind(type, function(data, event) {
+    window.pm.bind(type, function(data, event) {
 
       // Only handle data if the connection id's match.
       if (data.__id && (data.__id === _self.id)) {
@@ -203,7 +271,7 @@
    *
    * @param active
    */
-  $.SeamlessConnection.prototype.setActive = function(active) {
+  window.SeamlessConnection.prototype.setActive = function(active) {
     this.active = active;
 
     // Empty the send queue if we have one.
@@ -215,19 +283,20 @@
       this.queue.length = 0;
     }
   };
-})(window, document, jQuery);
-(function(window, document, $, undefined) {
+})(window);
 
-  // Make sure we have the $.pm module loaded.
-  if (!$.hasOwnProperty('pm')) {
-    console.log('You must install the jQuery.pm module to use seamless.js.');
+(function(window, document, $) {
+  'use strict';
+  // Make sure we have the postmessage.js module loaded.
+  if (!window.hasOwnProperty('pm')) {
+    console.log('You must install the postmessage.js module to use seamless.js.');
     return;
   }
 
   /**
    * Create the seamless.js class on the jQuery object.
    */
-  $.seamless = {
+  $.seamless = window.seamless = {
 
     /**
      * The options for the client seamless.js library.
@@ -285,7 +354,7 @@
       options = this.options;
 
       // The connection object.
-      var connection = new $.SeamlessConnection(
+      var connection = new window.SeamlessConnection(
         window.parent,
         options.url
       );
@@ -335,7 +404,7 @@
       }
 
       // See if this page should not be iframed.
-      var noiframe = $.SeamlessBase.getParam('noiframe').toString();
+      var noiframe = window.SeamlessBase.getParam('noiframe').toString();
       if (noiframe === '1' || noiframe.toLowerCase() === 'true') {
         connection.send({
           type: 'seamless_noiframe',
@@ -366,7 +435,7 @@
           }
 
           // Get the new height of the child.
-          var newHeight = $(container).outerHeight(true);
+          var newHeight = window.SeamlessBase.elementHeight(window.SeamlessBase.getElement(container));
 
           // If the height are different.
           if (!sendingUpdate && (height !== newHeight)) {
@@ -435,20 +504,20 @@
         };
 
         // Listen for inject styles command.
-        $.pm.bind('seamless_styles', function(data) {
+        window.pm.bind('seamless_styles', function(data) {
           if (options.allowStyleInjection) {
-            $.SeamlessBase.injectStyles(data);
+            window.SeamlessBase.injectStyles(data);
           }
           
           if (options.allowAppendedStyleInjection) {
-            $.SeamlessBase.injectAppendedStyles(data);
+            window.SeamlessBase.injectAppendedStyles(data);
           }
           
           update();
         });
 
         // Listen for the connect event.
-        $.pm.bind('seamless_connect', function(data, event) {
+        window.pm.bind('seamless_connect', function(data, event) {
 
           // Set the connection ID.
           connection.id = data.id;
@@ -459,14 +528,13 @@
           }
 
           // Add some styles to the body to support seamless styles.
-          $('html').attr({
-            'style': 'overflow:hidden;' + $('body').attr('html'),
-            'scroll': 'no'
-          });
+          var htmlStyle = document.body.getAttribute('style');
+          document.body.setAttribute('style', 'overflow:hidden;' + htmlStyle);
+          document.body.setAttribute('scroll', 'no');
 
           // Inject styles if they wish.
           if (options.allowStyleInjection) {
-            $.SeamlessBase.injectStyles(data.styles);
+            window.SeamlessBase.injectStyles(data.styles);
           }
 
           // Call the update.
@@ -484,4 +552,4 @@
       return connection;
     }
   };
-})(window, document, jQuery);
+})(window, document, (typeof jQuery === 'undefined') ? {} : jQuery);
