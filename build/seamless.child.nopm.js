@@ -151,8 +151,8 @@
 
       // See if there are new styles to inject.
       var injectedStyles = this.getElement('style#injected-styles');
-      if (injectedStyles.length) {
-        window.SeamlessBase.setStyle(injectedStyles[0], styles);
+      if (injectedStyles) {
+        window.SeamlessBase.setStyle(injectedStyles, styles);
       }
       else {
 
@@ -167,7 +167,7 @@
         }
       }
     },
-    
+
     /**
      * Provide a cross browser method to inject and append new styles.
      *

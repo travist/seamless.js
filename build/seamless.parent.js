@@ -590,8 +590,8 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
 
       // See if there are new styles to inject.
       var injectedStyles = this.getElement('style#injected-styles');
-      if (injectedStyles.length) {
-        window.SeamlessBase.setStyle(injectedStyles[0], styles);
+      if (injectedStyles) {
+        window.SeamlessBase.setStyle(injectedStyles, styles);
       }
       else {
 
@@ -606,7 +606,7 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         }
       }
     },
-    
+
     /**
      * Provide a cross browser method to inject and append new styles.
      *
