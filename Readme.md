@@ -53,10 +53,29 @@ You can now use the following code within the Parent Page to turn your iframes i
 <iframe id="myiframe" src="childpage.html"></iframe>
 ```
 
-You can also pass in options to this jQuery library like so...
+Or, if you use **jQuery**, you can use it like so (jQuery is not required to use this library)...
+
+```
+<script type="text/javascript">
+  $(function() {
+    $('#myiframe').seamless();
+  });
+</script>
+<iframe id="myiframe" src="childpage.html"></iframe>
+```
+
+You can also pass in options to the library like so...
 
 ```
 window.seamless(document.getElementById('myiframe'), {
+  loading: 'I am loading!!!!'
+});
+```
+
+Or, using **jQuery**
+
+```
+$('#myiframe').seamless({
   loading: 'I am loading!!!!'
 });
 ```
