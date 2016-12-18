@@ -176,9 +176,7 @@ Within the Child Page, you will need to now add the following code to connect th
 <script type="text/javascript">
 
   // Connect to the parent page.
-  window.seamless.connect({
-    url: 'index.html'
-  });
+  window.seamless.connect();
 </script>
 ```
 
@@ -186,7 +184,6 @@ You can also pass in parameters to this like so...
 
 ```
 window.seamless.connect({
-  url: 'index.html',
   container: 'div.content'
 });
 ```
@@ -195,7 +192,7 @@ The following parameters are accepted.
 
   * __url__ - The url of the parent page to connect to.
     * _type_: string
-    * _required_: true
+    * _required_: false
     * _default_: ''
   * __container__ - The container for the main content on the page which determines the height of the page.
     * _type_: string
@@ -264,9 +261,7 @@ child.receive(function(data, event) {
 Inversely, you can easily communicate to the parent page from the child page like so...
 
 ```
-var parent = window.seamless.connect({
-  url: 'index.html'
-});
+var parent = window.seamless.connect();
 
 // Send a message
 parent.send({
@@ -306,9 +301,7 @@ child.send({
 
 #### Child Page ####
 ```
-var parent = window.seamless.connect({
-  url: 'index.html'
-});
+var parent = window.seamless.connect();
 
 // Receive a message
 parent.receive(function(data, event) {
