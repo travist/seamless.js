@@ -35,7 +35,7 @@
 
       // Set the other parameters.
       pm.target = this.target;
-      pm.url = this.url;
+      pm.url = this.url || 'index.html';
       pm.type = pm.type || 'seamless_data';
       pm.data = pm.data || {};
       pm.data.__id = this.id;

@@ -1,5 +1,4 @@
 var connection = window.seamless.connect({
-  url: 'index.html',
   container: 'div.content',
   allowStyleInjection: true
 });

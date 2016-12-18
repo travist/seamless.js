@@ -12,7 +12,7 @@
       if (!elements) {
         return elements;
       }
-      return ((elements.constructor === NodeList) && elements.length) ? elements[0] : elements;
+      return (selectorType === 'querySelectorAll') ? elements[0] : elements;
     },
 
     /**
