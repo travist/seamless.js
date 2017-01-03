@@ -1178,9 +1178,9 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
     // Use for jQuery.
     $.fn.seamless = seamless;
   }
-  else {
-    window.seamless = function(element, options) {
-      return seamless.call(element, options);
-    };
-  }
+
+  // Always add seamless to the window.
+  window.seamless = function(element, options) {
+    return seamless.call(element, options);
+  };
 })(window, document, (typeof jQuery === 'undefined') ? {} : jQuery);
