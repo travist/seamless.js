@@ -54,7 +54,10 @@ gulp.task('scripts-child-nopm', function() {
 });
 
 gulp.task('scripts-parent', function() {
-  return gulp.src(['lib/postmessage/postmessage.js'].concat(parentFiles))
+  return gulp.src([
+    'lib/postmessage/postmessage.js',
+    'node_modules/custom-event-polyfill/custom-event-polyfill.js'
+  ].concat(parentFiles))
     .pipe(concat('seamless.parent.js'))
     .pipe(gulp.dest('build/'))
     .pipe(rename('seamless.parent.min.js'))
