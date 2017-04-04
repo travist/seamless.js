@@ -441,6 +441,10 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
   'use strict';
   // Base seamless functionality between parent and child.
   window.SeamlessBase = {
+    isNumeric: function(value) {
+      return (value - parseFloat(value) + 1) >= 0;
+    },
+
     getElement: function(selector) {
       var selectorType = 'querySelectorAll';
       if (selector.indexOf('#') === 0) {
@@ -466,6 +470,10 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
       var elmMargin = 0;
       if(document.all) {// IE
         elmHeight = element.currentStyle.height;
+        if (!this.isNumeric(elmHeight)) {
+          elmHeight = element.offsetHeight;
+        }
+        elmHeight = parseInt(elmHeight, 10);
         elmMargin = parseInt(element.currentStyle.marginTop, 10) + parseInt(element.currentStyle.marginBottom, 10);
       } else {// Mozilla
         elmHeight = parseInt(document.defaultView.getComputedStyle(element, '').getPropertyValue('height'), 10);
