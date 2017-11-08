@@ -902,7 +902,7 @@ try {
     var defaults = {
       showLoadingIndicator: true,
       loading: 'Loading ...',
-      spinner: 'http://www.travistidwell.com/seamless.js/src/loader.gif',
+      spinner: 'https://unpkg.com/seamless@latest/src/loader.gif',
       onConnect: null,
       styles: [],
       fallback: true,
