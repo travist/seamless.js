@@ -1,6 +1,6 @@
 {
   "name": "seamless",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "main": "build/seamless.parent.min.js",
   "devDependencies": {
     "gulp": "^3.9.1",
