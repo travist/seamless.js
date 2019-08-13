@@ -983,15 +983,9 @@ try {
 
     // Add the necessary attributes.
     var attributes = {
-      'scrolling': 'no',
       'seamless': 'seamless',
       'width': '100%',
       'height': '0px',
-      'marginheight': '0',
-      'marginwidth': '0',
-      'frameborder': '0',
-      'horizontalscrolling': 'no',
-      'verticalscrolling': 'no',
       'style': 'border: none; overflow-y: hidden;'
     };
     for (var name in attributes) {
