@@ -3,7 +3,7 @@
   "version": "1.4.1",
   "main": "build/seamless.parent.min.js",
   "devDependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-eslint": "^3.0.1",
     "gulp-rename": "^1.2.2",
